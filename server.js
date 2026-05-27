@@ -57,6 +57,11 @@ app.use(
     require("./routes/reelRoutes")
 );
 
+app.use(
+    "/api/auth",
+    require("./routes/authRoutes")
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
