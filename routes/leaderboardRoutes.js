@@ -10,7 +10,7 @@ const {
 
     getLeaderboards,
 
-    getLeaderboardByType,
+    getLeaderboardByCategory,
 
     updateLeaderboard,
 
@@ -34,11 +34,11 @@ router.get(
     getLeaderboards
 );
 
-// GET DAILY / WEEKLY / MONTHLY / ALLTIME
+// GET BY CATEGORY
 
 router.get(
-    "/type/:type",
-    getLeaderboardByType
+    "/category/:category",
+    getLeaderboardByCategory
 );
 
 // UPDATE

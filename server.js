@@ -63,10 +63,8 @@ app.use(
 );
 
 app.use(
-    "/api/store-categories",
-    require(
-        "./routes/storeCategoryRoutes"
-    )
+    "/api/stores",
+    require("./routes/storeRoutes")
 );
 
 app.use(

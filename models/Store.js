@@ -1,7 +1,7 @@
 const mongoose =
     require("mongoose");
 
-// BRAND VOUCHER
+// BRANDS
 
 const brandVoucherSchema =
     new mongoose.Schema({
@@ -23,7 +23,7 @@ const brandVoucherSchema =
 
     });
 
-// STORE CATEGORY
+// CATEGORY
 
 const storeCategorySchema =
     new mongoose.Schema({

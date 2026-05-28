@@ -18,28 +18,6 @@ const leaderboardUserSchema =
 
     });
 
-// WINNER BANNER
-
-const winnerBannerSchema =
-    new mongoose.Schema({
-
-        title: {
-            type: String,
-            required: true
-        },
-
-        subtitle: {
-            type: String,
-            required: true
-        },
-
-        imageUrl: {
-            type: String,
-            required: true
-        }
-
-    });
-
 // USER RANK STATUS
 
 const userRankStatusSchema =
@@ -62,33 +40,32 @@ const userRankStatusSchema =
 
     });
 
-// MAIN MODEL
+// MAIN LEADERBOARD
 
 const leaderboardSchema =
     new mongoose.Schema({
 
-        type: {
+        category: {
+
             type: String,
+
             enum: [
                 "daily",
                 "weekly",
                 "monthly",
                 "alltime"
             ],
+
             required: true
+
         },
 
-        winnerBanner:
-            winnerBannerSchema,
-
-        topThreeUsers:
-            [leaderboardUserSchema],
+        topUsers: [
+            leaderboardUserSchema
+        ],
 
         userRankStatus:
-            userRankStatusSchema,
-
-        leaderboardUsers:
-            [leaderboardUserSchema]
+            userRankStatusSchema
 
     },
         {

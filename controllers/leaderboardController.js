@@ -16,16 +16,22 @@ exports.createLeaderboard =
                 );
 
             res.status(201).json({
+
                 success: true,
+
                 data
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                     error.message
+
             });
 
         }
@@ -43,25 +49,31 @@ exports.getLeaderboards =
                 await Leaderboard.find();
 
             res.status(200).json({
+
                 success: true,
+
                 data
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                     error.message
+
             });
 
         }
 
     };
 
-// ================= GET BY TYPE =================
+// ================= GET CATEGORY =================
 
-exports.getLeaderboardByType =
+exports.getLeaderboardByCategory =
     async (req, res) => {
 
         try {
@@ -69,22 +81,28 @@ exports.getLeaderboardByType =
             const data =
                 await Leaderboard.findOne({
 
-                    type:
-                        req.params.type
+                    category:
+                        req.params.category
 
                 });
 
             res.status(200).json({
+
                 success: true,
+
                 data
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                     error.message
+
             });
 
         }
@@ -112,16 +130,22 @@ exports.updateLeaderboard =
                 );
 
             res.status(200).json({
+
                 success: true,
+
                 data
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                     error.message
+
             });
 
         }
@@ -136,21 +160,29 @@ exports.deleteLeaderboard =
         try {
 
             await Leaderboard.findByIdAndDelete(
+
                 req.params.id
+
             );
 
             res.status(200).json({
+
                 success: true,
+
                 message:
                     "Leaderboard Deleted"
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                     error.message
+
             });
 
         }
