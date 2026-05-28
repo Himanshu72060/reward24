@@ -69,6 +69,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/leaderboards",
+    require(
+        "./routes/leaderboardRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
