@@ -62,6 +62,13 @@ app.use(
     require("./routes/authRoutes")
 );
 
+app.use(
+    "/api/store-categories",
+    require(
+        "./routes/storeCategoryRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
