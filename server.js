@@ -103,6 +103,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/userprofiles",
+    require(
+        "./routes/userProfileRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
