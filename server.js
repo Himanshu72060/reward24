@@ -79,6 +79,16 @@ app.use(
     require("./routes/challengeRoutes")
 );
 
+app.use(
+    "/api/daily-rewards",
+    require("./routes/dailyRewardRoutes")
+);
+
+app.use(
+    "/api/referearn",
+    require("./routes/referEarnRoutes")
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
