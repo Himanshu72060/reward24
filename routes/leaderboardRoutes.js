@@ -12,6 +12,8 @@ const {
 
     getLeaderboardByCategory,
 
+    getSingleLeaderboard,
+
     updateLeaderboard,
 
     deleteLeaderboard
@@ -34,11 +36,18 @@ router.get(
     getLeaderboards
 );
 
-// GET BY CATEGORY
+// GET CATEGORY WISE
 
 router.get(
-    "/category/:category",
+    "/category/:categoryId",
     getLeaderboardByCategory
+);
+
+// GET SINGLE
+
+router.get(
+    "/:id",
+    getSingleLeaderboard
 );
 
 // UPDATE

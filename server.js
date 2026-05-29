@@ -89,6 +89,13 @@ app.use(
     require("./routes/referEarnRoutes")
 );
 
+app.use(
+    "/api/leaderboard-categories",
+    require(
+        "./routes/leaderboardCategoryRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });

@@ -1,17 +1,17 @@
-const Leaderboard =
+const LeaderboardCategory =
     require(
-        "../models/Leaderboard"
+        "../models/LeaderboardCategory"
     );
 
 // ================= CREATE =================
 
-exports.createLeaderboard =
+exports.createCategory =
     async (req, res) => {
 
         try {
 
-            const leaderboard =
-                await Leaderboard.create(
+            const category =
+                await LeaderboardCategory.create(
                     req.body
                 );
 
@@ -19,7 +19,7 @@ exports.createLeaderboard =
 
                 success: true,
 
-                data: leaderboard
+                data: category
 
             });
 
@@ -40,18 +40,13 @@ exports.createLeaderboard =
 
 // ================= GET ALL =================
 
-exports.getLeaderboards =
+exports.getCategories =
     async (req, res) => {
 
         try {
 
-            const leaderboards =
-                await Leaderboard.find()
-
-                    .populate(
-                        "category"
-                    )
-
+            const categories =
+                await LeaderboardCategory.find()
                     .sort({
                         createdAt: -1
                     });
@@ -60,53 +55,7 @@ exports.getLeaderboards =
 
                 success: true,
 
-                data: leaderboards
-
-            });
-
-        } catch (error) {
-
-            res.status(500).json({
-
-                success: false,
-
-                message:
-                    error.message
-
-            });
-
-        }
-
-    };
-
-// ================= GET BY CATEGORY =================
-
-exports.getLeaderboardByCategory =
-    async (req, res) => {
-
-        try {
-
-            const data =
-                await Leaderboard.find({
-
-                    category:
-                        req.params.categoryId
-
-                })
-
-                    .populate(
-                        "category"
-                    )
-
-                    .sort({
-                        createdAt: -1
-                    });
-
-            res.status(200).json({
-
-                success: true,
-
-                data
+                data: categories
 
             });
 
@@ -127,25 +76,35 @@ exports.getLeaderboardByCategory =
 
 // ================= GET SINGLE =================
 
-exports.getSingleLeaderboard =
+exports.getSingleCategory =
     async (req, res) => {
 
         try {
 
-            const leaderboard =
-                await Leaderboard.findById(
+            const category =
+                await LeaderboardCategory.findById(
                     req.params.id
-                )
+                );
 
-                    .populate(
-                        "category"
-                    );
+            if (!category) {
+
+                return res.status(404)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Category Not Found"
+
+                    });
+
+            }
 
             res.status(200).json({
 
                 success: true,
 
-                data: leaderboard
+                data: category
 
             });
 
@@ -166,13 +125,13 @@ exports.getSingleLeaderboard =
 
 // ================= UPDATE =================
 
-exports.updateLeaderboard =
+exports.updateCategory =
     async (req, res) => {
 
         try {
 
-            const leaderboard =
-                await Leaderboard.findByIdAndUpdate(
+            const category =
+                await LeaderboardCategory.findByIdAndUpdate(
 
                     req.params.id,
 
@@ -188,7 +147,7 @@ exports.updateLeaderboard =
 
                 success: true,
 
-                data: leaderboard
+                data: category
 
             });
 
@@ -209,12 +168,12 @@ exports.updateLeaderboard =
 
 // ================= DELETE =================
 
-exports.deleteLeaderboard =
+exports.deleteCategory =
     async (req, res) => {
 
         try {
 
-            await Leaderboard.findByIdAndDelete(
+            await LeaderboardCategory.findByIdAndDelete(
                 req.params.id
             );
 
@@ -223,7 +182,7 @@ exports.deleteLeaderboard =
                 success: true,
 
                 message:
-                    "Leaderboard Deleted"
+                    "Category Deleted"
 
             });
 

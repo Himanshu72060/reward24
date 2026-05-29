@@ -1,71 +1,54 @@
 const mongoose =
     require("mongoose");
 
-// TOP USERS
-
-const leaderboardUserSchema =
-    new mongoose.Schema({
-
-        name: {
-            type: String,
-            required: true
-        },
-
-        amount: {
-            type: String,
-            required: true
-        }
-
-    });
-
-// USER RANK STATUS
-
-const userRankStatusSchema =
-    new mongoose.Schema({
-
-        username: {
-            type: String,
-            required: true
-        },
-
-        rank: {
-            type: String,
-            required: true
-        },
-
-        totalEarned: {
-            type: String,
-            required: true
-        }
-
-    });
-
-// MAIN LEADERBOARD
-
 const leaderboardSchema =
     new mongoose.Schema({
 
         category: {
 
-            type: String,
+            type:
+                mongoose.Schema.Types.ObjectId,
 
-            enum: [
-                "daily",
-                "weekly",
-                "monthly",
-                "alltime"
-            ],
+            ref:
+                "LeaderboardCategory",
 
             required: true
-
         },
 
-        topUsers: [
-            leaderboardUserSchema
-        ],
+        name: {
 
-        userRankStatus:
-            userRankStatusSchema
+            type: String,
+
+            required: true
+        },
+
+        amount: {
+
+            type: String,
+
+            required: true
+        },
+
+        username: {
+
+            type: String,
+
+            required: true
+        },
+
+        rank: {
+
+            type: String,
+
+            required: true
+        },
+
+        totalEarned: {
+
+            type: String,
+
+            required: true
+        }
 
     },
         {
