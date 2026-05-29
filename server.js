@@ -96,6 +96,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/scratch-rewards",
+    require(
+        "./routes/scratchRewardRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
