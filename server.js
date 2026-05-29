@@ -74,6 +74,11 @@ app.use(
     )
 );
 
+app.use(
+    "/api/challenges",
+    require("./routes/challengeRoutes")
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
