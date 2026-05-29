@@ -110,6 +110,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/support",
+    require(
+        "./routes/supportRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
