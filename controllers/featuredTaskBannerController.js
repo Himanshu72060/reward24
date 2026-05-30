@@ -11,6 +11,9 @@ const uploadToBunny =
         "../utils/bunnyUpload"
     );
 
+
+// CREATE
+
 exports.createBanner =
     async (
         req,
@@ -26,8 +29,7 @@ exports.createBanner =
                 "";
 
             if (
-                req.files
-                    ?.backgroundImage
+                req.files?.backgroundImage
             ) {
 
                 const file =
@@ -48,8 +50,7 @@ exports.createBanner =
             }
 
             if (
-                req.files
-                    ?.taskImage
+                req.files?.taskImage
             ) {
 
                 const file =
@@ -70,47 +71,185 @@ exports.createBanner =
             }
 
             const banner =
-                await FeaturedTaskBanner.create(
-                    {
-                        tagText:
-                            req.body
-                                .tagText,
+                await FeaturedTaskBanner.create({
 
-                        title:
-                            req.body
-                                .title,
+                    tagText:
+                        req.body.tagText,
 
-                        subtitle:
-                            req.body
-                                .subtitle,
+                    title:
+                        req.body.title,
 
-                        backgroundImageUrl,
+                    subtitle:
+                        req.body.subtitle,
 
-                        taskImageUrl,
+                    backgroundImageUrl,
 
-                        startColorHex:
-                            req.body
-                                .startColorHex,
+                    taskImageUrl,
 
-                        endColorHex:
-                            req.body
-                                .endColorHex,
+                    startColorHex:
+                        req.body.startColorHex,
 
-                        tagColorHex:
-                            req.body
-                                .tagColorHex,
+                    endColorHex:
+                        req.body.endColorHex,
 
-                        buttonText:
-                            req.body
-                                .buttonText
-                    }
-                );
+                    tagColorHex:
+                        req.body.tagColorHex,
+
+                    buttonText:
+                        req.body.buttonText
+
+                });
 
             res.status(201)
                 .json({
                     success: true,
                     data: banner
                 });
+
+        } catch (error) {
+
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+
+        }
+
+    };
+
+
+// GET ALL
+
+exports.getBanners =
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            const banners =
+                await FeaturedTaskBanner.find()
+                    .sort({
+                        createdAt: -1
+                    });
+
+            res.json({
+                success: true,
+                data: banners
+            });
+
+        } catch (error) {
+
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+
+        }
+
+    };
+
+
+// GET SINGLE
+
+exports.getBanner =
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            const banner =
+                await FeaturedTaskBanner.findById(
+                    req.params.id
+                );
+
+            res.json({
+                success: true,
+                data: banner
+            });
+
+        } catch (error) {
+
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+
+        }
+
+    };
+
+
+// UPDATE
+
+exports.updateBanner =
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            const banner =
+                await FeaturedTaskBanner.findByIdAndUpdate(
+
+                    req.params.id,
+
+                    req.body,
+
+                    {
+                        new: true
+                    }
+
+                );
+
+            res.json({
+                success: true,
+                data: banner
+            });
+
+        } catch (error) {
+
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+
+        }
+
+    };
+
+
+// DELETE
+
+exports.deleteBanner =
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            await FeaturedTaskBanner.findByIdAndDelete(
+                req.params.id
+            );
+
+            res.json({
+                success: true,
+                message:
+                    "Deleted Successfully"
+            });
 
         } catch (error) {
 
