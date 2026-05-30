@@ -145,6 +145,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/user-stats",
+    require(
+        "./routes/userStatsRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
