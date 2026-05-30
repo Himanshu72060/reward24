@@ -152,6 +152,20 @@ app.use(
     )
 );
 
+app.use(
+    "/api/network",
+    require(
+        "./routes/networkRoutes"
+    )
+);
+
+app.use(
+    "/api/transactions",
+    require(
+        "./routes/transactionRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
