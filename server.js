@@ -117,6 +117,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/notifications",
+    require(
+        "./routes/notificationRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
