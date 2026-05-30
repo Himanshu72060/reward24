@@ -166,6 +166,20 @@ app.use(
     )
 );
 
+app.use(
+    "/api/promo-banners",
+    require(
+        "./routes/promoBannerRoutes"
+    )
+);
+
+app.use(
+    "/api/featured-task-banners",
+    require(
+        "./routes/featuredTaskBannerRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
