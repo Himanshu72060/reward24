@@ -180,6 +180,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/campaign-details",
+    require(
+        "./routes/campaignDetailRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
