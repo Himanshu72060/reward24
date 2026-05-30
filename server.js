@@ -124,6 +124,20 @@ app.use(
     )
 );
 
+app.use(
+    "/api/task-partners",
+    require(
+        "./routes/taskPartnerRoutes"
+    )
+);
+
+app.use(
+    "/api/partner-details",
+    require(
+        "./routes/partnerDetailRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
