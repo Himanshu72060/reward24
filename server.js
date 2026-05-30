@@ -138,6 +138,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/giftcards",
+    require(
+        "./routes/giftCardRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
