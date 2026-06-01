@@ -4,6 +4,9 @@ const express =
 const router =
     express.Router();
 
+const auth =
+    require("../middleware/authMiddleware");
+
 const {
 
     createStats,
@@ -18,23 +21,39 @@ const {
     "../controllers/userStatsController"
 );
 
+
+// CREATE
+
 router.post(
     "/",
+    auth,
     createStats
 );
 
+
+// GET
+
 router.get(
     "/",
+    auth,
     getStats
 );
 
+
+// UPDATE
+
 router.put(
     "/:id",
+    auth,
     updateStats
 );
 
+
+// DELETE
+
 router.delete(
     "/:id",
+    auth,
     deleteStats
 );
 

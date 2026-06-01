@@ -5,11 +5,8 @@ const activitySchema =
     new mongoose.Schema({
 
         title: String,
-
         value: String,
-
         iconKey: String,
-
         colorHex: String
 
     });
@@ -18,9 +15,7 @@ const weeklySchema =
     new mongoose.Schema({
 
         label: String,
-
         barHeightPercentage: Number,
-
         isActive: Boolean
 
     });
@@ -28,14 +23,31 @@ const weeklySchema =
 const userStatsSchema =
     new mongoose.Schema({
 
+        userId: {
+
+            type:
+                mongoose.Schema.Types.ObjectId,
+
+            ref: "User",
+
+            required: true
+
+        },
+
         totalBalanceCoins: {
+
             type: Number,
+
             default: 0
+
         },
 
         estimatedValuationInInr: {
+
             type: Number,
+
             default: 0
+
         },
 
         activities: [
@@ -47,7 +59,9 @@ const userStatsSchema =
         ]
 
     }, {
+
         timestamps: true
+
     });
 
 module.exports =

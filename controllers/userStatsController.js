@@ -9,9 +9,14 @@ exports.createStats =
         try {
 
             const stats =
-                await UserStats.create(
-                    req.body
-                );
+                await UserStats.create({
+
+                    ...req.body,
+
+                    userId:
+                        req.user.id
+
+                });
 
             res.status(201).json({
                 success: true,
@@ -36,9 +41,12 @@ exports.getStats =
 
         try {
 
+
             const stats =
-                await UserStats
-                    .findOne();
+                await UserStats.findOne({
+                    userId: req.user.id
+                });
+
 
             res.json({
                 success: true,
