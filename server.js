@@ -187,6 +187,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/redeem-options",
+    require(
+        "./routes/redeemOptionRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
