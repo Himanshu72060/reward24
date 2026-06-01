@@ -1,32 +1,44 @@
-const mongoose = require("mongoose");
+// # models / spinModel.js
 
-const wheelItemSchema = new mongoose.Schema({
-    id: {
+const mongoose =
+  require("mongoose");
+
+const spinSchema =
+  new mongoose.Schema(
+
+    {
+
+      user: {
+
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        required: true,
+
+      },
+
+      coinsWon: {
+
         type: Number,
-        required: true
+
+        required: true,
+
+      },
+
     },
-    coins: {
-        type: Number,
-        required: true
-    },
-    label: {
-        type: String,
-        required: true
+
+    {
+
+      timestamps: true,
+
     }
-});
 
-const spinConfigSchema = new mongoose.Schema({
-    wheelItems: [wheelItemSchema],
+  );
 
-    remainingSpins: {
-        type: Number,
-        default: 5
-    }
-}, {
-    timestamps: true
-});
-
-module.exports = mongoose.model(
-    "SpinConfig",
-    spinConfigSchema
-);
+module.exports =
+  mongoose.model(
+    "Spin",
+    spinSchema
+  );
