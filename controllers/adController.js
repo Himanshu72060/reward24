@@ -1,37 +1,81 @@
 const Ad =
     require("../models/Ad");
 
-// CREATE
+const uploadToBunny =
+    require("../utils/bunnyUpload");
+
+const fs =
+    require("fs");
+
+// CREATE AD
 
 exports.createAd =
     async (req, res) => {
 
         try {
 
-            const ad =
-                await Ad.create(
-                    req.body
-                );
+            let mediaUrl =
+                "";
 
-            res.status(201).json({
-                success: true,
-                data: ad
-            });
+            if (req.file) {
+
+                mediaUrl =
+                    await uploadToBunny(
+                        req.file.path,
+                        Date.now() +
+                        "-" +
+                        req.file.originalname
+                    );
+
+                fs.unlinkSync(
+                    req.file.path
+                );
+            }
+
+            const ad =
+                await Ad.create({
+
+                    title:
+                        req.body.title,
+
+                    description:
+                        req.body.description,
+
+                    adType:
+                        req.body.adType,
+
+                    mediaUrl,
+
+                    redirectUrl:
+                        req.body.redirectUrl,
+
+                    duration:
+                        req.body.duration,
+
+                    isActive:
+                        req.body.isActive
+
+                });
+
+            res.status(201)
+                .json({
+                    success: true,
+                    data: ad
+                });
 
         } catch (error) {
 
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
-            });
-
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
         }
-
     };
 
 
-// GET RANDOM ACTIVE AD
+// GET RANDOM AD
 
 exports.getAd =
     async (req, res) => {
@@ -51,10 +95,9 @@ exports.getAd =
                     success: true,
                     data: null
                 });
-
             }
 
-            const randomAd =
+            const ad =
                 ads[
                 Math.floor(
                     Math.random() *
@@ -64,19 +107,48 @@ exports.getAd =
 
             res.json({
                 success: true,
-                data: randomAd
+                data: ad
             });
 
         } catch (error) {
 
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+        }
+    };
+
+
+// GET ALL
+
+exports.getAds =
+    async (req, res) => {
+
+        try {
+
+            const ads =
+                await Ad.find()
+                    .sort({
+                        createdAt: -1
+                    });
+
+            res.json({
+                success: true,
+                data: ads
             });
 
-        }
+        } catch (error) {
 
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
+        }
     };
 
 
@@ -107,14 +179,13 @@ exports.updateAd =
 
         } catch (error) {
 
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
-            });
-
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
         }
-
     };
 
 
@@ -137,12 +208,11 @@ exports.deleteAd =
 
         } catch (error) {
 
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
-            });
-
+            res.status(500)
+                .json({
+                    success: false,
+                    message:
+                        error.message
+                });
         }
-
     };

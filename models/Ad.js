@@ -23,7 +23,7 @@ const adSchema =
             default: "video"
         },
 
-        adUrl: {
+        mediaUrl: {
             type: String,
             required: true
         },

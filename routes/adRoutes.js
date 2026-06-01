@@ -1,6 +1,9 @@
 const express =
     require("express");
 
+const multer =
+    require("multer");
+
 const router =
     express.Router();
 
@@ -9,11 +12,18 @@ const auth =
         "../middleware/authMiddleware"
     );
 
+const upload =
+    multer({
+        dest: "uploads/"
+    });
+
 const {
 
     createAd,
 
     getAd,
+
+    getAds,
 
     updateAd,
 
@@ -23,23 +33,45 @@ const {
     "../controllers/adController"
 );
 
+
+// CREATE
+
 router.post(
     "/",
     auth,
+    upload.single("media"),
     createAd
 );
+
+
+// RANDOM AD
+
+router.get(
+    "/random",
+    auth,
+    getAd
+);
+
+
+// GET ALL
 
 router.get(
     "/",
     auth,
-    getAd
+    getAds
 );
+
+
+// UPDATE
 
 router.put(
     "/:id",
     auth,
     updateAd
 );
+
+
+// DELETE
 
 router.delete(
     "/:id",
