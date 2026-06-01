@@ -4,6 +4,9 @@ const express =
 const router =
     express.Router();
 
+const auth =
+    require("../middleware/authMiddleware");
+
 const {
 
     createScratchReward,
@@ -24,6 +27,7 @@ const {
 
 router.post(
     "/",
+    auth,
     createScratchReward
 );
 
@@ -31,6 +35,7 @@ router.post(
 
 router.get(
     "/",
+    auth,
     getScratchRewards
 );
 
@@ -38,6 +43,7 @@ router.get(
 
 router.get(
     "/:id",
+    auth,
     getSingleScratchReward
 );
 
@@ -45,6 +51,7 @@ router.get(
 
 router.put(
     "/:id",
+    auth,
     updateScratchReward
 );
 
@@ -52,6 +59,7 @@ router.put(
 
 router.delete(
     "/:id",
+    auth,
     deleteScratchReward
 );
 
