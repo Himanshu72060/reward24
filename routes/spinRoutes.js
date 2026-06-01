@@ -1,47 +1,17 @@
-// # routes / spinRoutes.js
+const express = require("express");
+const router = express.Router();
 
-const express =
-  require("express");
-
-const router =
-  express.Router();
-
-const protect =
-  require(
-    "../middleware/authMiddleware"
-  );
+const protect = require("../middleware/authMiddleware");
 
 const {
   spinWheel,
-} = require(
-  "../controllers/spinController"
-);
+  getSpinHistory,
+} = require("../controllers/spinController");
 
+// 🎰 SPIN
+router.post("/spin", protect, spinWheel);
 
+// 📊 HISTORY
+router.get("/", protect, getSpinHistory);
 
-// 🎰 SPIN API
-
-router.post(
-  "/spin",
-  protect,
-  spinWheel
-);
-
-// router.get(
-//   "/",
-//   protect,
-//   spinWheel
-// );
-
-// router.get(
-//   "/history",
-//   protect,
-//   getSpinHistory
-// );
-
-
-
-
-
-module.exports =
-  router;
+module.exports = router;
