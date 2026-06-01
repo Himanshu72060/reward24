@@ -4,6 +4,9 @@ const express =
 const router =
     express.Router();
 
+const auth =
+    require("../middleware/authMiddleware");
+
 const {
 
     createReferEarn,
@@ -24,6 +27,7 @@ const {
 
 router.post(
     "/",
+    auth,
     createReferEarn
 );
 
@@ -31,6 +35,7 @@ router.post(
 
 router.get(
     "/",
+    auth,
     getReferEarns
 );
 
@@ -38,6 +43,7 @@ router.get(
 
 router.get(
     "/:id",
+    auth,
     getSingleReferEarn
 );
 
@@ -45,6 +51,7 @@ router.get(
 
 router.put(
     "/:id",
+    auth,
     updateReferEarn
 );
 
@@ -52,6 +59,7 @@ router.put(
 
 router.delete(
     "/:id",
+    auth,
     deleteReferEarn
 );
 
