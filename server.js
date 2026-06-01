@@ -197,10 +197,10 @@ app.use(
 app.use("/api/ad-config", require("./routes/adConfigRoutes"));
 
 
-// app.use(
-//     "/api/spin",
-//     require("./routes/spinRoutes")
-// );
+app.use(
+    "/api/spin",
+    require("./routes/spinRoutes")
+);
 
 app.get("/", (req, res) => {
     res.send("API Running");

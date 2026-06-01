@@ -27,6 +27,20 @@ router.post(
   spinWheel
 );
 
+// router.get(
+//   "/",
+//   protect,
+//   spinWheel
+// );
+
+// router.get(
+//   "/history",
+//   protect,
+//   getSpinHistory
+// );
+
+
+
 
 
 module.exports =

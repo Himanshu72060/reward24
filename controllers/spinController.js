@@ -1,7 +1,7 @@
 // # controllers / spinController.js
 
 const User =
-    require("../models/userModel");
+    require("../models/User");
 
 const Spin =
     require("../models/spinModel");
@@ -161,3 +161,22 @@ exports.spinWheel =
         }
 
     };
+
+    // exports.getSpinHistory = async (req, res) => {
+
+    //     try {
+    //         const spins = await Spin.find({ user: req.user.id }).sort({ createdAt: -1 });
+    //         res.status(200).json({
+    //             success: true,
+    //             spins
+    //         });
+    //     } catch (error) {
+    //         console.log("SPIN HISTORY ERROR:", error);
+    //         res.status(500).json({
+    //             success: false,
+    //             message: error.message
+    //         });
+    //     }
+    // };
+
+    // e
