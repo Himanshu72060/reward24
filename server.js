@@ -202,6 +202,8 @@ app.use(
     require("./routes/spinRoutes")
 );
 
+app.use("/api/payment", require("./routes/paymentRoutes"));
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });
