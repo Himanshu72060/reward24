@@ -1,6 +1,9 @@
 const Reel =
     require("../models/Reel");
 
+const User =
+    require("../models/User");
+
 const uploadToBunny =
     require("../utils/bunnyUpload");
 
@@ -16,6 +19,7 @@ exports.createReel =
 
             const {
                 title,
+                description,
                 coins
             } = req.body;
 
@@ -30,7 +34,6 @@ exports.createReel =
                         message:
                             "Video Required"
                     });
-
             }
 
             const fileName =
@@ -46,11 +49,39 @@ exports.createReel =
                 file.path
             );
 
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+            }
+
             const reel =
                 await Reel.create({
+
+                    userId:
+                        user._id,
+
+                    name:
+                        user.fullName,
+
+                    profileImage:
+                        user.profileImage || "",
+
                     title,
-                    coins,
+
+                    description,
+
+                    coins:
+                        coins || 1,
+
                     videoUrl
+
                 });
 
             res.status(201)
@@ -71,6 +102,7 @@ exports.createReel =
         }
 
     };
+
 
 // GET ALL REELS
 
@@ -104,6 +136,127 @@ exports.getReels =
 
     };
 
+
+// LIKE
+
+exports.likeReel =
+    async (req, res) => {
+
+        try {
+
+            const reel =
+                await Reel.findByIdAndUpdate(
+
+                    req.params.id,
+
+                    {
+                        $inc: {
+                            likes: 1
+                        }
+                    },
+
+                    {
+                        new: true
+                    }
+                );
+
+            res.json({
+                success: true,
+                data: reel
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
+        }
+
+    };
+
+
+// SHARE
+
+exports.shareReel =
+    async (req, res) => {
+
+        try {
+
+            const reel =
+                await Reel.findByIdAndUpdate(
+
+                    req.params.id,
+
+                    {
+                        $inc: {
+                            shares: 1
+                        }
+                    },
+
+                    {
+                        new: true
+                    }
+                );
+
+            res.json({
+                success: true,
+                data: reel
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
+        }
+
+    };
+
+
+// WATCH REWARD
+
+exports.watchReward =
+    async (req, res) => {
+
+        try {
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            user.coins =
+                (user.coins || 0) + 1;
+
+            await user.save();
+
+            res.json({
+
+                success: true,
+
+                earnedCoin: 1,
+
+                totalCoins:
+                    user.coins
+
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
+        }
+
+    };
+
+
 // DELETE
 
 exports.deleteReel =
@@ -115,22 +268,22 @@ exports.deleteReel =
                 req.params.id
             );
 
-            res.status(200)
-                .json({
-                    success: true,
-                    message:
-                        "Deleted"
-                });
+            res.json({
+
+                success: true,
+
+                message:
+                    "Deleted"
+
+            });
 
         } catch (error) {
 
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
-
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
         }
 
     };

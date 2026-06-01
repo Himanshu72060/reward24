@@ -275,7 +275,9 @@ exports.login = async (
         const token =
             jwt.sign(
                 {
-                    id: user._id
+                    id: user._id,
+                    name: user.fullName,
+                    profileImage: user.profileImage || ""
                 },
                 process.env.JWT_SECRET,
                 {
