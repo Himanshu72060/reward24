@@ -4,6 +4,9 @@ const express =
 const router =
     express.Router();
 
+const auth =
+    require("../middleware/authMiddleware");
+
 const {
 
     createGiftCard,
@@ -20,28 +23,48 @@ const {
     "../controllers/giftCardController"
 );
 
+
+// CREATE
+
 router.post(
     "/",
+    auth,
     createGiftCard
 );
 
+
+// GET ALL
+
 router.get(
     "/",
+    auth,
     getGiftCards
 );
 
+
+// GET SINGLE
+
 router.get(
     "/:id",
+    auth,
     getGiftCard
 );
 
+
+// UPDATE
+
 router.put(
     "/:id",
+    auth,
     updateGiftCard
 );
 
+
+// DELETE
+
 router.delete(
     "/:id",
+    auth,
     deleteGiftCard
 );
 
