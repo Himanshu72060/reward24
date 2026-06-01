@@ -194,6 +194,13 @@ app.use(
     )
 );
 
+app.use(
+    "/api/ads",
+    require(
+        "./routes/adRoutes"
+    )
+);
+
 app.get("/", (req, res) => {
     res.send("API Running");
 });

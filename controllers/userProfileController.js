@@ -10,7 +10,10 @@ exports.createUserProfile =
 
             const profile =
                 await UserProfile.create(
-                    req.body
+                    {
+                        ...req.body,
+                        userId: req.user.id
+                    }
                 );
 
             res.status(201).json({
@@ -71,27 +74,31 @@ exports.getUserProfiles =
 
 // GET SINGLE
 
+// GET SINGLE
+
 exports.getSingleUserProfile =
     async (req, res) => {
 
         try {
 
             const profile =
-                await UserProfile.findById(
-                    req.params.id
-                );
+                await UserProfile.findOne({
+
+                    userId:
+                        req.user.id
+
+                });
 
             if (!profile) {
 
-                return res.status(404)
-                    .json({
+                return res.status(404).json({
 
-                        success: false,
+                    success: false,
 
-                        message:
-                            "Profile Not Found"
+                    message:
+                        "Profile Not Found"
 
-                    });
+                });
 
             }
 
