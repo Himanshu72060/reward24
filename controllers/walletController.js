@@ -1,29 +1,33 @@
 const WalletConfig = require("../models/walletModel");
 
-// 🔥 CREATE / UPDATE CONFIG (ADMIN)
+// 🔥 CREATE / UPDATE WALLET CONFIG (ADMIN)
 exports.saveWalletConfig = async (req, res) => {
     try {
         const data = await WalletConfig.findOneAndUpdate(
             {},
             req.body,
-            { new: true, upsert: true }
+            {
+                new: true,
+                upsert: true,
+                runValidators: true
+            }
         );
 
         res.json({
             success: true,
-            message: "Wallet config saved",
+            message: "Wallet config saved successfully",
             data
         });
 
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// 🔥 GET CONFIG (PUBLIC)
+// 🌐 GET WALLET CONFIG (PUBLIC)
 exports.getWalletConfig = async (req, res) => {
     try {
         const data = await WalletConfig.findOne();
@@ -33,79 +37,82 @@ exports.getWalletConfig = async (req, res) => {
             data
         });
 
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// GET ALL
+// update and delete transactions (admin only)
+
 exports.getTransactions = async (req, res) => {
     try {
-        const transactions = await Transaction.find({ userId: req.user.id }).sort({ createdAt: -1 });
+        const transactions = await Transaction.find().sort({ createdAt: -1 });
 
         res.json({
             success: true,
             data: transactions
         });
-    } catch (err) {
+        
+    } catch (error) {
         res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// update transaction
 exports.updateTransaction = async (req, res) => {
     try {
-        const transaction = await Transaction.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.id
-            },
+        const transaction = await Transaction.findByIdAndUpdate(
+            req.params.id,
             req.body,
             { new: true }
         );
-        if (!transaction) {
-            return res.status(404).json({
-                success: false,
-                message: "Transaction not found"
-            });
-        }
         res.json({
             success: true,
             data: transaction
         });
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
 
-// DELETE TRANSACTION
 exports.deleteTransaction = async (req, res) => {
-    try {
-        const transaction = await Transaction.findOneAndDelete(
-            { _id: req.params.id, userId: req.user.id }
-        );
-        if (!transaction) {
-            return res.status(404).json({
-                success: false,
-                message: "Transaction not found"
+        try {
+            await Transaction.findByIdAndDelete(req.params.id);
+            res.json({
+                success: true,
+                message: "Transaction deleted successfully"
             });
         }
-        res.json({
-            success: true,
-            message: "Transaction deleted"
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-    }
+        catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
 };
+
+exports.getTransactionsByType = async (req, res) => {
+        try {
+            const transactions = await Transaction.find({ type: req.params.type }).sort({ createdAt: -1 });
+            res.json({
+                success: true,
+                data: transactions
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                success: false, 
+                message: error.message
+            });
+        }
+};
+
 
