@@ -15,7 +15,13 @@ const {
 
     profile,
 
-    referralHistory
+    referralHistory,
+
+    getUsers,
+
+    updateUser,
+
+    deleteUser
 
 } = require(
     "../controllers/authController"

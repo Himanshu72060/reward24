@@ -203,6 +203,7 @@ app.use(
 );
 
 app.use("/api/payment", require("./routes/paymentRoutes"));
+app.use("/api/wallet", require("./routes/walletRoutes"));
 
 app.get("/", (req, res) => {
     res.send("API Running");
