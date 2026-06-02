@@ -13,6 +13,8 @@ const {
 
     getRedeemOptions,
 
+    getRedeemOptionsByBrand,
+
     getRedeemOption,
 
     updateRedeemOption,
@@ -39,6 +41,15 @@ router.get(
     "/",
     auth,
     getRedeemOptions
+);
+
+
+// GET BY BRAND ID
+
+router.get(
+    "/brand/:brandId",
+    auth,
+    getRedeemOptionsByBrand
 );
 
 

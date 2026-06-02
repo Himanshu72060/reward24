@@ -4,6 +4,12 @@ const mongoose =
 const redeemOptionSchema =
     new mongoose.Schema({
 
+        // Store API ke brand ka _id
+        brandId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        },
+
         brandName: {
             type: String,
             required: true

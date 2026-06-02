@@ -1,6 +1,7 @@
 const RedeemOption =
     require("../models/RedeemOption");
 
+
 // CREATE
 
 exports.createRedeemOption =
@@ -44,6 +45,40 @@ exports.getRedeemOptions =
 
             res.status(200).json({
                 success: true,
+                data
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+
+        }
+
+    };
+
+
+// GET BY BRAND ID (NEW)
+
+exports.getRedeemOptionsByBrand =
+    async (req, res) => {
+
+        try {
+
+            const data =
+                await RedeemOption.find({
+
+                    brandId: req.params.brandId,
+
+                    isActive: true
+
+                });
+
+            res.status(200).json({
+                success: true,
+                count: data.length,
                 data
             });
 
