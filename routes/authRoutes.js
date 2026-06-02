@@ -40,6 +40,15 @@ router.get(
     profile
 );
 
+// GET ALL USERS
+router.get("/users", getUsers);
+
+// UPDATE USER
+router.put("/users/:id", updateUser);
+
+// DELETE USER
+router.delete("/users/:id", deleteUser);
+
 router.get(
     "/referral-history",
     authMiddleware,
