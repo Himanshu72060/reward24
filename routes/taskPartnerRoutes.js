@@ -8,7 +8,11 @@ const {
 
     createPartner,
 
-    getPartners
+    getPartners,
+
+    updatePartner,
+
+    deletePartner
 
 } = require(
     "../controllers/taskPartnerController"
@@ -23,6 +27,10 @@ router.get(
     "/",
     getPartners
 );
+
+router.put("/:id", updatePartner);
+
+router.delete("/:id", deletePartner);
 
 module.exports =
     router;

@@ -52,3 +52,50 @@ exports.getPartners =
         }
 
     };
+
+// UPDATE
+
+exports.updatePartner = async (req, res) => {
+
+    try {
+
+        const partner =
+            await TaskPartner.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            );
+
+        res.status(200).json(partner);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
+
+// DELETE
+
+exports.deletePartner = async (req, res) => {
+
+    try {
+
+        await TaskPartner.findByIdAndDelete(
+            req.params.id
+        );
+
+        res.status(200).json({
+            message: "Deleted Successfully"
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
