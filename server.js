@@ -202,6 +202,11 @@ app.use(
     require("./routes/spinRoutes")
 );
 
+app.use(
+    "/api/redeem",
+    require("./routes/redeemRoutes")
+);
+
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
 
