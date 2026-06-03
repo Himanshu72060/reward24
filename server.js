@@ -207,6 +207,11 @@ app.use(
     require("./routes/redeemRoutes")
 );
 
+app.use(
+    "/api/withdraw",
+    require("./routes/withdrawRoutes")
+);
+
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
 
