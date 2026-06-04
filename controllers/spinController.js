@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const Spin = require("../models/spinModel");
 
+const UserProfile =
+    require("../models/UserProfile");
+
 /* =========================
    🎰 SPIN WHEEL (POST)
 ========================= */
@@ -41,6 +44,19 @@ exports.spinWheel = async (req, res) => {
         // UPDATE USER COINS
         user.coins += reward;
         await user.save();
+
+        await UserProfile.findOneAndUpdate(
+            {
+                userId: user._id
+            },
+            {
+                $set: {
+                    totalCoins: user.coins
+                }
+            }
+        );
+
+
 
         // SAVE HISTORY
         await Spin.create({

@@ -83,42 +83,30 @@ exports.getSingleUserProfile =
 
             const profile =
                 await UserProfile.findOne({
-
-                    userId:
-                        req.user.id
-
+                    userId: req.user.id
                 });
 
-            if (!profile) {
-
-                return res.status(404).json({
-
-                    success: false,
-
-                    message:
-                        "Profile Not Found"
-
-                });
-
-            }
+            const user =
+                await User.findById(
+                    req.user.id
+                );
 
             res.status(200).json({
 
                 success: true,
 
-                data: profile
+                data: {
+                    ...profile.toObject(),
+                    totalCoins: user.coins
+                }
 
             });
 
         } catch (error) {
 
             res.status(500).json({
-
                 success: false,
-
-                message:
-                    error.message
-
+                message: error.message
             });
 
         }
