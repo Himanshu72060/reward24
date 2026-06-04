@@ -212,11 +212,8 @@ app.use(
     require("./routes/withdrawRoutes")
 );
 
-app.use(
-    "/api/upi",
-    require("./routes/upiRoutes")
-);
-
+app.use("/api/upi",require("./routes/upiRoutes"));
+app.use("/api/daily-streak",require("./routes/dailyStreakRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
 
