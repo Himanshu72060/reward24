@@ -21,7 +21,9 @@ const {
 
     updateUser,
 
-    deleteUser
+    deleteUser,
+
+    editProfile
 
 } = require(
     "../controllers/authController"
@@ -59,6 +61,12 @@ router.get(
     "/referral-history",
     authMiddleware,
     referralHistory
+);
+
+router.put(
+    "/edit-profile",
+    authMiddleware,
+    editProfile
 );
 
 module.exports =

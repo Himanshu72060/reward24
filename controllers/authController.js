@@ -465,3 +465,90 @@ exports.deleteUser = async (req, res) => {
 
     }
 };    
+
+
+// UPDATE PROFILE
+exports.editProfile = async (req, res) => {
+    try {
+
+        const {
+            fullName,
+            profileImage,
+            oldPassword,
+            newPassword,
+            confirmPassword
+        } = req.body;
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Update Name
+        if (fullName) {
+            user.fullName = fullName;
+        }
+
+        // Update Image
+        if (profileImage) {
+            user.profileImage = profileImage;
+        }
+
+        // Password Change
+        if (
+            oldPassword ||
+            newPassword ||
+            confirmPassword
+        ) {
+
+            const isMatch =
+                await bcrypt.compare(
+                    oldPassword,
+                    user.password
+                );
+
+            if (!isMatch) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Old password is incorrect"
+                });
+            }
+
+            if (
+                newPassword !==
+                confirmPassword
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Passwords do not match"
+                });
+            }
+
+            user.password =
+                await bcrypt.hash(
+                    newPassword,
+                    10
+                );
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            data: user
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+};
