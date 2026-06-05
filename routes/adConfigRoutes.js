@@ -12,4 +12,7 @@ router.get("/", controller.getAdConfig);
 // UPDATE
 router.put("/update", controller.updateAdConfig);
 
+// DELETE
+router.delete("/delete/:id", controller.deleteAdConfig);
+
 module.exports = router;
