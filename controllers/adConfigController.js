@@ -22,27 +22,12 @@ exports.createAdConfig = async (req, res) => {
 /* ================= GET CONFIG (MAIN RESPONSE) ================= */
 exports.getAdConfig = async (req, res) => {
     try {
-        const config = await AdConfig.findOne({ isActive: true });
-
-        if (!config) {
-            return res.status(404).json({
-                status: false,
-                message: "No Ad Config Found"
-            });
-        }
+        const configs = await AdConfig.find();
 
         res.json({
             status: true,
-            message: "Ad Configuration Loaded",
-            data: {
-                app_id: config.app_id,
-                rewarded_ads: config.rewarded_ads.map((ad, index) => ({
-                    id: index + 1,
-                    platform: ad.platform,
-                    ad_unit_id: ad.ad_unit_id,
-                    status: ad.status
-                }))
-            }
+            count: configs.length,
+            data: configs
         });
 
     } catch (err) {
