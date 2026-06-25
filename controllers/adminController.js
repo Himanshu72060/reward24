@@ -1,8 +1,8 @@
+
 const Admin = require("../models/Admin");
-
 const bcrypt = require("bcryptjs");
-
 const jwt = require("jsonwebtoken");
+
 
 exports.registerAdmin = async (req, res) => {
     try {
@@ -30,6 +30,7 @@ exports.registerAdmin = async (req, res) => {
             message: "Admin Registered",
             data: admin
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -37,6 +38,7 @@ exports.registerAdmin = async (req, res) => {
         });
     }
 };
+
 
 exports.loginAdmin = async (req, res) => {
     try {
@@ -51,10 +53,7 @@ exports.loginAdmin = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(
-            password,
-            admin.password
-        );
+        const isMatch = await bcrypt.compare(password, admin.password);
 
         if (!isMatch) {
             return res.status(400).json({
@@ -63,9 +62,11 @@ exports.loginAdmin = async (req, res) => {
             });
         }
 
+        // ✅ role: "admin" ADD KIYA
         const token = jwt.sign(
             {
-                id: admin._id
+                id: admin._id,
+                role: "admin"
             },
             process.env.JWT_SECRET,
             {
@@ -79,6 +80,7 @@ exports.loginAdmin = async (req, res) => {
             token,
             admin
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -87,16 +89,16 @@ exports.loginAdmin = async (req, res) => {
     }
 };
 
+
 exports.getAdminProfile = async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin.id).select(
-            "-password"
-        );
+        const admin = await Admin.findById(req.admin.id).select("-password");
 
         res.status(200).json({
             success: true,
             data: admin
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,

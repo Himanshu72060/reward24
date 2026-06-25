@@ -1,12 +1,12 @@
- 
+
 
 // routes/reelRoutes.js
 
 const express = require("express");
 const router = express.Router();
-
 const auth = require("../middleware/authMiddleware");
-const upload = require("../middleware/upload"); // ✅ APNA WALA MULTER
+const adminAuth = require("../middleware/adminMiddleware");
+const upload = require("../middleware/upload");
 
 const {
     createReel,
@@ -18,59 +18,39 @@ const {
 } = require("../controllers/reelController");
 
 
-// ================= CREATE REEL =================
+// ================= CREATE REEL (ADMIN ONLY) =================
 
 router.post(
     "/",
-    auth,
-    upload.single("video"),  // ✅ memory storage use hoga
+    adminAuth,
+    upload.single("video"),
     createReel
 );
 
 
-// ================= GET ALL REELS =================
+// ================= GET ALL REELS (USER) =================
 
-router.get(
-    "/",
-    auth,
-    getReels
-);
+router.get("/", auth, getReels);
 
 
-// ================= LIKE REEL =================
+// ================= LIKE REEL (USER) =================
 
-router.put(
-    "/like/:id",
-    auth,
-    likeReel
-);
+router.put("/like/:id", auth, likeReel);
 
 
-// ================= SHARE REEL =================
+// ================= SHARE REEL (USER) =================
 
-router.put(
-    "/share/:id",
-    auth,
-    shareReel
-);
+router.put("/share/:id", auth, shareReel);
 
 
-// ================= WATCH REWARD =================
+// ================= WATCH REWARD (USER) =================
 
-router.post(
-    "/watch-reward",
-    auth,
-    watchReward
-);
+router.post("/watch-reward", auth, watchReward);
 
 
-// ================= DELETE REEL =================
+// ================= DELETE REEL (ADMIN ONLY) =================
 
-router.delete(
-    "/:id",
-    auth,
-    deleteReel
-);
+router.delete("/:id", adminAuth, deleteReel);
 
 
 module.exports = router;
