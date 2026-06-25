@@ -1,289 +1,478 @@
-const Reel =
-    require("../models/Reel");
+// const Reel =
+//     require("../models/Reel");
 
-const User =
-    require("../models/User");
+// const User =
+//     require("../models/User");
 
-const uploadToBunny =
-    require("../utils/bunnyUpload");
+// const uploadToBunny =
+//     require("../utils/bunnyUpload");
 
-const fs =
-    require("fs");
+// const fs =
+//     require("fs");
 
-// CREATE REEL
+// // CREATE REEL
 
-exports.createReel =
-    async (req, res) => {
+// exports.createReel =
+//     async (req, res) => {
 
-        try {
+//         try {
 
-            const {
-                title,
-                description,
-                coins
-            } = req.body;
+//             const {
+//                 title,
+//                 description,
+//                 coins
+//             } = req.body;
 
-            const file =
-                req.file;
+//             const file =
+//                 req.file;
 
-            if (!file) {
+//             if (!file) {
 
-                return res.status(400)
-                    .json({
-                        success: false,
-                        message:
-                            "Video Required"
-                    });
-            }
+//                 return res.status(400)
+//                     .json({
+//                         success: false,
+//                         message:
+//                             "Video Required"
+//                     });
+//             }
 
-            const fileName =
-                `${Date.now()}-${file.originalname}`;
+//             const fileName =
+//                 `${Date.now()}-${file.originalname}`;
 
-            const videoUrl =
-                await uploadToBunny(
-                    file.path,
-                    fileName
-                );
+//             const videoUrl =
+//                 await uploadToBunny(
+//                     file.path,
+//                     fileName
+//                 );
 
-            fs.unlinkSync(
-                file.path
-            );
+//             fs.unlinkSync(
+//                 file.path
+//             );
 
-            const user =
-                await User.findById(
-                    req.user.id
-                );
+//             const user =
+//                 await User.findById(
+//                     req.user.id
+//                 );
 
-            if (!user) {
-                return res.status(404).json({
-                    success: false,
-                    message: "User not found"
-                });
-            }
+//             if (!user) {
+//                 return res.status(404).json({
+//                     success: false,
+//                     message: "User not found"
+//                 });
+//             }
 
-            const reel =
-                await Reel.create({
+//             const reel =
+//                 await Reel.create({
 
-                    userId:
-                        user._id,
+//                     userId:
+//                         user._id,
 
-                    name:
-                        user.fullName,
+//                     name:
+//                         user.fullName,
 
-                    profileImage:
-                        user.profileImage || "",
+//                     profileImage:
+//                         user.profileImage || "",
 
-                    title,
+//                     title,
 
-                    description,
+//                     description,
 
-                    coins:
-                        coins || 1,
+//                     coins:
+//                         coins || 1,
 
-                    videoUrl
+//                     videoUrl
 
-                });
+//                 });
 
-            res.status(201)
-                .json({
-                    success: true,
-                    data: reel
-                });
+//             res.status(201)
+//                 .json({
+//                     success: true,
+//                     data: reel
+//                 });
 
-        } catch (error) {
+//         } catch (error) {
 
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
+//             res.status(500)
+//                 .json({
+//                     success: false,
+//                     message:
+//                         error.message
+//                 });
 
-        }
+//         }
 
-    };
-
-
-// GET ALL REELS
-
-exports.getReels =
-    async (req, res) => {
-
-        try {
-
-            const reels =
-                await Reel.find()
-                    .sort({
-                        createdAt: -1
-                    });
-
-            res.status(200)
-                .json({
-                    success: true,
-                    data: reels
-                });
-
-        } catch (error) {
-
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
-
-        }
-
-    };
+//     };
 
 
-// LIKE
+// // GET ALL REELS
 
-exports.likeReel =
-    async (req, res) => {
+// exports.getReels =
+//     async (req, res) => {
 
-        try {
+//         try {
 
-            const reel =
-                await Reel.findByIdAndUpdate(
+//             const reels =
+//                 await Reel.find()
+//                     .sort({
+//                         createdAt: -1
+//                     });
 
-                    req.params.id,
+//             res.status(200)
+//                 .json({
+//                     success: true,
+//                     data: reels
+//                 });
 
-                    {
-                        $inc: {
-                            likes: 1
-                        }
-                    },
+//         } catch (error) {
 
-                    {
-                        new: true
-                    }
-                );
+//             res.status(500)
+//                 .json({
+//                     success: false,
+//                     message:
+//                         error.message
+//                 });
 
-            res.json({
-                success: true,
-                data: reel
-            });
+//         }
 
-        } catch (error) {
+//     };
 
-            res.status(500).json({
+
+// // LIKE
+
+// exports.likeReel =
+//     async (req, res) => {
+
+//         try {
+
+//             const reel =
+//                 await Reel.findByIdAndUpdate(
+
+//                     req.params.id,
+
+//                     {
+//                         $inc: {
+//                             likes: 1
+//                         }
+//                     },
+
+//                     {
+//                         new: true
+//                     }
+//                 );
+
+//             res.json({
+//                 success: true,
+//                 data: reel
+//             });
+
+//         } catch (error) {
+
+//             res.status(500).json({
+//                 success: false,
+//                 message:
+//                     error.message
+//             });
+//         }
+
+//     };
+
+
+// // SHARE
+
+// exports.shareReel =
+//     async (req, res) => {
+
+//         try {
+
+//             const reel =
+//                 await Reel.findByIdAndUpdate(
+
+//                     req.params.id,
+
+//                     {
+//                         $inc: {
+//                             shares: 1
+//                         }
+//                     },
+
+//                     {
+//                         new: true
+//                     }
+//                 );
+
+//             res.json({
+//                 success: true,
+//                 data: reel
+//             });
+
+//         } catch (error) {
+
+//             res.status(500).json({
+//                 success: false,
+//                 message:
+//                     error.message
+//             });
+//         }
+
+//     };
+
+
+// // WATCH REWARD
+
+// exports.watchReward =
+//     async (req, res) => {
+
+//         try {
+
+//             const user =
+//                 await User.findById(
+//                     req.user.id
+//                 );
+
+//             user.coins =
+//                 (user.coins || 0) + 1;
+
+//             await user.save();
+
+//             res.json({
+
+//                 success: true,
+
+//                 earnedCoin: 1,
+
+//                 totalCoins:
+//                     user.coins
+
+//             });
+
+//         } catch (error) {
+
+//             res.status(500).json({
+//                 success: false,
+//                 message:
+//                     error.message
+//             });
+//         }
+
+//     };
+
+
+// // DELETE
+
+// exports.deleteReel =
+//     async (req, res) => {
+
+//         try {
+
+//             await Reel.findByIdAndDelete(
+//                 req.params.id
+//             );
+
+//             res.json({
+
+//                 success: true,
+
+//                 message:
+//                     "Deleted"
+
+//             });
+
+//         } catch (error) {
+
+//             res.status(500).json({
+//                 success: false,
+//                 message:
+//                     error.message
+//             });
+//         }
+
+//     };
+
+// controllers/reelController.js
+
+const Reel = require("../models/Reel");
+const User = require("../models/User");
+const uploadToBunny = require("../utils/bunnyUpload");
+
+
+// ================= CREATE REEL =================
+
+exports.createReel = async (req, res) => {
+
+    try {
+
+        const { title, description, coins } = req.body;
+
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({
                 success: false,
-                message:
-                    error.message
+                message: "Video Required",
             });
         }
 
-    };
+        // GENERATE CLEAN FILE NAME
+        const fileName = `${Date.now()}-${file.originalname}`;
 
+        // ✅ file.buffer use karo (memory storage)
+        // ✅ "videos" folder pass karo
+        const videoUrl = await uploadToBunny(
+            file.buffer,
+            fileName,
+            "videos"
+        );
 
-// SHARE
+        // ✅ fs.unlinkSync HATAO — memory storage mein disk file nahi hoti
 
-exports.shareReel =
-    async (req, res) => {
+        const user = await User.findById(req.user.id);
 
-        try {
-
-            const reel =
-                await Reel.findByIdAndUpdate(
-
-                    req.params.id,
-
-                    {
-                        $inc: {
-                            shares: 1
-                        }
-                    },
-
-                    {
-                        new: true
-                    }
-                );
-
-            res.json({
-                success: true,
-                data: reel
-            });
-
-        } catch (error) {
-
-            res.status(500).json({
+        if (!user) {
+            return res.status(404).json({
                 success: false,
-                message:
-                    error.message
+                message: "User not found",
             });
         }
 
-    };
+        const reel = await Reel.create({
+            userId: user._id,
+            name: user.fullName,
+            profileImage: user.profileImage || "",
+            title,
+            description,
+            coins: coins || 1,
+            videoUrl,
+        });
+
+        res.status(201).json({
+            success: true,
+            data: reel,
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+
+};
 
 
-// WATCH REWARD
+// ================= GET ALL REELS =================
 
-exports.watchReward =
-    async (req, res) => {
+exports.getReels = async (req, res) => {
 
-        try {
+    try {
 
-            const user =
-                await User.findById(
-                    req.user.id
-                );
+        const reels = await Reel.find().sort({ createdAt: -1 });
 
-            user.coins =
-                (user.coins || 0) + 1;
+        res.status(200).json({
+            success: true,
+            data: reels,
+        });
 
-            await user.save();
+    } catch (error) {
 
-            res.json({
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
 
-                success: true,
+    }
 
-                earnedCoin: 1,
-
-                totalCoins:
-                    user.coins
-
-            });
-
-        } catch (error) {
-
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
-            });
-        }
-
-    };
+};
 
 
-// DELETE
+// ================= LIKE REEL =================
 
-exports.deleteReel =
-    async (req, res) => {
+exports.likeReel = async (req, res) => {
 
-        try {
+    try {
 
-            await Reel.findByIdAndDelete(
-                req.params.id
-            );
+        const reel = await Reel.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { likes: 1 } },
+            { new: true }
+        );
 
-            res.json({
+        res.json({ success: true, data: reel });
 
-                success: true,
+    } catch (error) {
 
-                message:
-                    "Deleted"
+        res.status(500).json({ success: false, message: error.message });
 
-            });
+    }
 
-        } catch (error) {
+};
 
-            res.status(500).json({
-                success: false,
-                message:
-                    error.message
-            });
-        }
 
-    };
+// ================= SHARE REEL =================
+
+exports.shareReel = async (req, res) => {
+
+    try {
+
+        const reel = await Reel.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { shares: 1 } },
+            { new: true }
+        );
+
+        res.json({ success: true, data: reel });
+
+    } catch (error) {
+
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+
+};
+
+
+// ================= WATCH REWARD =================
+
+exports.watchReward = async (req, res) => {
+
+    try {
+
+        const user = await User.findById(req.user.id);
+
+        user.coins = (user.coins || 0) + 1;
+
+        await user.save();
+
+        res.json({
+            success: true,
+            earnedCoin: 1,
+            totalCoins: user.coins,
+        });
+
+    } catch (error) {
+
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+
+};
+
+
+// ================= DELETE REEL =================
+
+exports.deleteReel = async (req, res) => {
+
+    try {
+
+        await Reel.findByIdAndDelete(req.params.id);
+
+        res.json({ success: true, message: "Deleted" });
+
+    } catch (error) {
+
+        res.status(500).json({ success: false, message: error.message });
+
+    }
+
+};
