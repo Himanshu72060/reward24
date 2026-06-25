@@ -1,50 +1,34 @@
-const express =
-    require("express");
+ 
 
-const multer =
-    require("multer");
+// routes/reelRoutes.js
 
-const router =
-    express.Router();
+const express = require("express");
+const router = express.Router();
 
-const auth =
-    require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
+const upload = require("../middleware/upload"); // ✅ APNA WALA MULTER
 
 const {
-
     createReel,
-
     getReels,
-
     deleteReel,
-
     likeReel,
-
     shareReel,
-
-    watchReward
-
-} = require(
-    "../controllers/reelController"
-);
-
-const upload =
-    multer({
-        dest: "uploads/"
-    });
+    watchReward,
+} = require("../controllers/reelController");
 
 
-// CREATE
+// ================= CREATE REEL =================
 
 router.post(
     "/",
     auth,
-    upload.single("video"),
+    upload.single("video"),  // ✅ memory storage use hoga
     createReel
 );
 
 
-// GET ALL
+// ================= GET ALL REELS =================
 
 router.get(
     "/",
@@ -53,7 +37,7 @@ router.get(
 );
 
 
-// LIKE
+// ================= LIKE REEL =================
 
 router.put(
     "/like/:id",
@@ -62,7 +46,7 @@ router.put(
 );
 
 
-// SHARE
+// ================= SHARE REEL =================
 
 router.put(
     "/share/:id",
@@ -71,7 +55,7 @@ router.put(
 );
 
 
-// WATCH REWARD
+// ================= WATCH REWARD =================
 
 router.post(
     "/watch-reward",
@@ -80,7 +64,7 @@ router.post(
 );
 
 
-// DELETE
+// ================= DELETE REEL =================
 
 router.delete(
     "/:id",
@@ -88,5 +72,5 @@ router.delete(
     deleteReel
 );
 
-module.exports =
-    router;
+
+module.exports = router;
