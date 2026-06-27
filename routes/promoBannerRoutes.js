@@ -23,28 +23,20 @@ const {
 } = require("../controllers/promoBannerController");
 
 
-// ==========================
-// MULTER
-// ==========================
+// ================= MULTER =================
 
-const storage = multer.memoryStorage();
+const storage =
+    multer.memoryStorage();
 
-const upload = multer({
+const upload =
+    multer({
 
-    storage,
+        storage
 
-    limits: {
-
-        fileSize: 20 * 1024 * 1024
-
-    }
-
-});
+    });
 
 
-// ==========================
-// CREATE BANNER (ADMIN)
-// ==========================
+// CREATE
 
 router.post(
 
@@ -54,28 +46,14 @@ router.post(
 
     role("admin"),
 
-    upload.fields([
-
-        {
-            name: "backgroundImage",
-            maxCount: 1
-        },
-
-        {
-            name: "foregroundImage",
-            maxCount: 1
-        }
-
-    ]),
+    upload.single("backgroundImage"),
 
     createBanner
 
 );
 
 
-// ==========================
-// GET ALL BANNERS
-// ==========================
+// GET ALL
 
 router.get(
 
@@ -88,9 +66,7 @@ router.get(
 );
 
 
-// ==========================
-// GET SINGLE BANNER
-// ==========================
+// GET SINGLE
 
 router.get(
 
@@ -103,9 +79,7 @@ router.get(
 );
 
 
-// ==========================
-// UPDATE BANNER (ADMIN)
-// ==========================
+// UPDATE
 
 router.put(
 
@@ -115,28 +89,14 @@ router.put(
 
     role("admin"),
 
-    upload.fields([
-
-        {
-            name: "backgroundImage",
-            maxCount: 1
-        },
-
-        {
-            name: "foregroundImage",
-            maxCount: 1
-        }
-
-    ]),
+    upload.single("backgroundImage"),
 
     updateBanner
 
 );
 
 
-// ==========================
-// DELETE BANNER (ADMIN)
-// ==========================
+// DELETE
 
 router.delete(
 
@@ -150,4 +110,5 @@ router.delete(
 
 );
 
-module.exports = router;
+module.exports =
+    router;

@@ -1,233 +1,286 @@
 const fs = require("fs");
+
 const FeaturedTaskBanner = require("../models/FeaturedTaskBanner");
+
 const uploadToBunny = require("../utils/bunnyUpload");
 
-// CREATE
+
+// =========================
+// CREATE BANNER
+// =========================
 
 exports.createBanner = async (req, res) => {
-    console.log("BODY =>", req.body);
-    console.log("FILES =>", req.files);
-    console.log("FILE KEYS =>", Object.keys(req.files || {}));
+
     try {
 
-        let backgroundImageUrl = "";
-        let taskImageUrl = "";
+        if (!req.file) {
 
-        // Background Image Upload
-        if (req.files?.backgroundImage?.length) {
-            console.log("Background file =>", req.files.backgroundImage?.[0]);
+            return res.status(400).json({
 
-            const file = req.files.backgroundImage[0];
+                success: false,
 
-            const fileBuffer = fs.readFileSync(file.path);
+                message: "Background image is required"
 
-            backgroundImageUrl = await uploadToBunny(
-                fileBuffer,
-                `${Date.now()}-${file.originalname}`,
-                "featured-task-banners/backgrounds"
-            );
+            });
 
-            fs.unlinkSync(file.path);
         }
 
-        // Task Image Upload
-        if (req.files?.taskImage?.length) {
-            console.log("Task file =>", req.files.taskImage?.[0]);
+        const file = req.file;
 
-            const file = req.files.taskImage[0];
+        const fileBuffer = fs.readFileSync(file.path);
 
-            const fileBuffer = fs.readFileSync(file.path);
+        const backgroundImageUrl = await uploadToBunny(
 
-            taskImageUrl = await uploadToBunny(
-                fileBuffer,
-                `${Date.now()}-${file.originalname}`,
-                "featured-task-banners/tasks"
-            );
+            fileBuffer,
 
-            fs.unlinkSync(file.path);
-        }
+            `${Date.now()}-${file.originalname}`,
+
+            "featured-task-banner"
+
+        );
+
+        fs.unlinkSync(file.path);
 
         const banner = await FeaturedTaskBanner.create({
 
-            tagText: req.body.tagText,
-
-            title: req.body.title,
-
-            subtitle: req.body.subtitle,
-
-            backgroundImageUrl,
-
-            taskImageUrl,
-
-            startColorHex: req.body.startColorHex,
-
-            endColorHex: req.body.endColorHex,
-
-            tagColorHex: req.body.tagColorHex,
-
-            buttonText: req.body.buttonText
+            backgroundImageUrl
 
         });
 
-        res.status(201).json({
+        return res.status(201).json({
+
             success: true,
+
+            message: "Banner created successfully",
+
             data: banner
+
         });
 
     } catch (error) {
 
-        console.log(error);
+        return res.status(500).json({
 
-        res.status(500).json({
             success: false,
+
             message: error.message
+
         });
 
     }
+
 };
 
 
+// =========================
+// GET ALL BANNERS
+// =========================
 
-// GET ALL
+exports.getBanners = async (req, res) => {
 
-exports.getBanners =
-    async (
-        req,
-        res
-    ) => {
+    try {
 
-        try {
+        const banners = await FeaturedTaskBanner.find()
 
-            const banners =
-                await FeaturedTaskBanner.find()
-                    .sort({
-                        createdAt: -1
-                    });
+            .sort({
 
-            res.json({
-                success: true,
-                data: banners
+                createdAt: -1
+
             });
 
-        } catch (error) {
+        return res.status(200).json({
 
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
+            success: true,
+
+            count: banners.length,
+
+            data: banners
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// =========================
+// GET SINGLE BANNER
+// =========================
+
+exports.getBanner = async (req, res) => {
+
+    try {
+
+        const banner = await FeaturedTaskBanner.findById(
+
+            req.params.id
+
+        );
+
+        if (!banner) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Banner not found"
+
+            });
 
         }
 
-    };
+        return res.status(200).json({
+
+            success: true,
+
+            data: banner
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
 
 
-// GET SINGLE
+// =========================
+// UPDATE BANNER
+// =========================
 
-exports.getBanner =
-    async (
-        req,
-        res
-    ) => {
+exports.updateBanner = async (req, res) => {
 
-        try {
+    try {
 
-            const banner =
-                await FeaturedTaskBanner.findById(
-                    req.params.id
-                );
+        const banner = await FeaturedTaskBanner.findById(
 
-            res.json({
-                success: true,
-                data: banner
+            req.params.id
+
+        );
+
+        if (!banner) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Banner not found"
+
             });
-
-        } catch (error) {
-
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
 
         }
 
-    };
+        if (req.file) {
 
+            const file = req.file;
 
-// UPDATE
+            const fileBuffer = fs.readFileSync(file.path);
 
-exports.updateBanner =
-    async (
-        req,
-        res
-    ) => {
+            const backgroundImageUrl = await uploadToBunny(
 
-        try {
+                fileBuffer,
 
-            const banner =
-                await FeaturedTaskBanner.findByIdAndUpdate(
+                `${Date.now()}-${file.originalname}`,
 
-                    req.params.id,
+                "featured-task-banner"
 
-                    req.body,
-
-                    {
-                        new: true
-                    }
-
-                );
-
-            res.json({
-                success: true,
-                data: banner
-            });
-
-        } catch (error) {
-
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
-
-        }
-
-    };
-
-
-// DELETE
-
-exports.deleteBanner =
-    async (
-        req,
-        res
-    ) => {
-
-        try {
-
-            await FeaturedTaskBanner.findByIdAndDelete(
-                req.params.id
             );
 
-            res.json({
-                success: true,
-                message:
-                    "Deleted Successfully"
-            });
+            fs.unlinkSync(file.path);
 
-        } catch (error) {
-
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
+            banner.backgroundImageUrl = backgroundImageUrl;
 
         }
 
-    };
+        await banner.save();
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Banner updated successfully",
+
+            data: banner
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// =========================
+// DELETE BANNER
+// =========================
+
+exports.deleteBanner = async (req, res) => {
+
+    try {
+
+        const banner = await FeaturedTaskBanner.findByIdAndDelete(
+
+            req.params.id
+
+        );
+
+        if (!banner) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Banner not found"
+
+            });
+
+        }
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Banner deleted successfully"
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};

@@ -81,10 +81,15 @@ const reelSchema = new mongoose.Schema({
         default: true
     },
 
-    // Show Interstitial after 5 sec
-    adAfterFiveSeconds: {
-        type: Boolean,
-        default: true
+
+    // adAfterFiveSeconds: {
+    //     type: Boolean,
+    //     default: true
+    // },
+
+    adAfterSeconds: {
+        type: Number,
+        default: 15
     },
 
     // Optional: reward only after ad watched

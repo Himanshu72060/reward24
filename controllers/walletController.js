@@ -55,7 +55,7 @@
 //             success: true,
 //             data: transactions
 //         });
-        
+
 //     } catch (error) {
 //         res.status(500).json({
 //             success: false,
@@ -357,4 +357,62 @@ exports.getCoinHistory = async (req, res) => {
 
     }
 
+};
+
+// ==============================
+// GET COINS SOURCE BREAKDOWN
+// ==============================
+exports.getCoinSources = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const transactions = await CoinTransaction.find({ userId })
+            .sort({ createdAt: -1 });
+
+        // Source-wise grouping
+        const sourceMap = {};
+
+        transactions.forEach((txn) => {
+            const type = txn.type || "other";
+            const coins = Number(txn.coins || 0);
+
+            if (!sourceMap[type]) {
+                sourceMap[type] = {
+                    type,
+                    totalCoins: 0,
+                    count: 0,
+                    transactions: []
+                };
+            }
+
+            sourceMap[type].totalCoins += coins;
+            sourceMap[type].count += 1;
+            sourceMap[type].transactions.push({
+                coins,
+                description: txn.description || "",
+                status: txn.status,
+                date: txn.createdAt
+            });
+        });
+
+        const sources = Object.values(sourceMap).sort(
+            (a, b) => b.totalCoins - a.totalCoins
+        );
+
+        const totalCoins = sources
+            .filter(s => s.type !== "withdraw")
+            .reduce((sum, s) => sum + s.totalCoins, 0);
+
+        return res.status(200).json({
+            success: true,
+            totalCoins,
+            sources
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 };

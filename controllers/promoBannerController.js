@@ -2,17 +2,15 @@ const PromoBanner = require("../models/PromoBanner");
 const axios = require("axios");
 const bunny = require("../config/bunny");
 
-// ==========================
-// BUNNY UPLOAD FUNCTION
-// ==========================
+// ================= BUNNY UPLOAD =================
 
-const uploadToBunny = async (file, folder) => {
+const uploadToBunny = async (file) => {
 
     const fileName =
         Date.now() + "-" + file.originalname;
 
     const uploadPath =
-        folder + "/" + fileName;
+        "promo-banner/" + fileName;
 
     await axios.put(
 
@@ -21,15 +19,10 @@ const uploadToBunny = async (file, folder) => {
         file.buffer,
 
         {
-
             headers: {
-
                 AccessKey: bunny.accessKey,
-
                 "Content-Type": file.mimetype
-
             }
-
         }
 
     );
@@ -39,125 +32,50 @@ const uploadToBunny = async (file, folder) => {
 };
 
 
-// ==========================
-// CREATE PROMO BANNER (ADMIN)
-// ==========================
+// ================= CREATE =================
 
 exports.createBanner = async (req, res) => {
 
     try {
 
-        const {
+        console.log(req.file);
 
-            tagText,
-
-            title,
-
-            subtitle,
-
-            startColorHex,
-
-            endColorHex,
-
-            buttonText
-
-        } = req.body;
-
-
-        if (!title) {
+        if (!req.file) {
 
             return res.status(400).json({
 
                 success: false,
-
-                message: "Title is required"
-
-            });
-
-        }
-
-
-        if (
-
-            !req.files ||
-
-            !req.files.backgroundImage ||
-
-            !req.files.foregroundImage
-
-        ) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message: "Background Image and Foreground Image are required"
+                message: "Background image is required"
 
             });
 
         }
-
 
         const backgroundImageUrl =
-            await uploadToBunny(
-
-                req.files.backgroundImage[0],
-
-                "promo-banners/background"
-
-            );
-
-
-        const foregroundImageUrl =
-            await uploadToBunny(
-
-                req.files.foregroundImage[0],
-
-                "promo-banners/foreground"
-
-            );
-
+            await uploadToBunny(req.file);
 
         const banner =
             await PromoBanner.create({
 
-                tagText,
-
-                title,
-
-                subtitle,
-
-                backgroundImageUrl,
-
-                foregroundImageUrl,
-
-                startColorHex,
-
-                endColorHex,
-
-                buttonText
+                backgroundImageUrl
 
             });
-
 
         return res.status(201).json({
 
             success: true,
-
-            message: "Promo Banner Created Successfully",
-
+            message: "Banner Created Successfully",
             data: banner
 
         });
 
-    }
+    } catch (error) {
 
-    catch (error) {
+        console.log(error);
 
         return res.status(500).json({
 
             success: false,
-
             message: error.message
 
         });
@@ -166,26 +84,21 @@ exports.createBanner = async (req, res) => {
 
 };
 
-// ==========================
-// GET ALL PROMO BANNERS
-// ==========================
+
+// ================= GET ALL =================
 
 exports.getBanners = async (req, res) => {
 
     try {
 
-        const banners = await PromoBanner
-            .find()
-            .sort({
+        const banners =
+            await PromoBanner.find().sort({
                 createdAt: -1
             });
 
         return res.status(200).json({
 
             success: true,
-
-            count: banners.length,
-
             data: banners
 
         });
@@ -195,7 +108,6 @@ exports.getBanners = async (req, res) => {
         return res.status(500).json({
 
             success: false,
-
             message: error.message
 
         });
@@ -205,25 +117,21 @@ exports.getBanners = async (req, res) => {
 };
 
 
-// ==========================
-// GET SINGLE PROMO BANNER
-// ==========================
+// ================= GET SINGLE =================
 
 exports.getBanner = async (req, res) => {
 
     try {
 
-        const banner = await PromoBanner.findById(
-            req.params.id
-        );
+        const banner =
+            await PromoBanner.findById(req.params.id);
 
         if (!banner) {
 
             return res.status(404).json({
 
                 success: false,
-
-                message: "Promo Banner not found"
+                message: "Banner not found"
 
             });
 
@@ -232,7 +140,6 @@ exports.getBanner = async (req, res) => {
         return res.status(200).json({
 
             success: true,
-
             data: banner
 
         });
@@ -242,7 +149,6 @@ exports.getBanner = async (req, res) => {
         return res.status(500).json({
 
             success: false,
-
             message: error.message
 
         });
@@ -251,102 +157,40 @@ exports.getBanner = async (req, res) => {
 
 };
 
-// ==========================
-// UPDATE PROMO BANNER
-// ==========================
+
+// ================= UPDATE =================
 
 exports.updateBanner = async (req, res) => {
 
     try {
 
-        const banner = await PromoBanner.findById(req.params.id);
+        const banner =
+            await PromoBanner.findById(req.params.id);
 
         if (!banner) {
 
             return res.status(404).json({
 
                 success: false,
-
-                message: "Promo Banner not found"
+                message: "Banner not found"
 
             });
 
         }
 
-        // Background Image Update
-
-        if (
-
-            req.files &&
-
-            req.files.backgroundImage
-
-        ) {
-
-            const backgroundImageUrl =
-                await uploadToBunny(
-
-                    req.files.backgroundImage[0],
-
-                    "promo-banners/background"
-
-                );
+        if (req.file) {
 
             banner.backgroundImageUrl =
-                backgroundImageUrl;
+                await uploadToBunny(req.file);
 
         }
-
-        // Foreground Image Update
-
-        if (
-
-            req.files &&
-
-            req.files.foregroundImage
-
-        ) {
-
-            const foregroundImageUrl =
-                await uploadToBunny(
-
-                    req.files.foregroundImage[0],
-
-                    "promo-banners/foreground"
-
-                );
-
-            banner.foregroundImageUrl =
-                foregroundImageUrl;
-
-        }
-
-        banner.tagText =
-            req.body.tagText || banner.tagText;
-
-        banner.title =
-            req.body.title || banner.title;
-
-        banner.subtitle =
-            req.body.subtitle || banner.subtitle;
-
-        banner.startColorHex =
-            req.body.startColorHex || banner.startColorHex;
-
-        banner.endColorHex =
-            req.body.endColorHex || banner.endColorHex;
-
-        banner.buttonText =
-            req.body.buttonText || banner.buttonText;
 
         await banner.save();
 
         return res.status(200).json({
 
             success: true,
-
-            message: "Promo Banner Updated Successfully",
-
+            message: "Banner Updated Successfully",
             data: banner
 
         });
@@ -356,7 +200,6 @@ exports.updateBanner = async (req, res) => {
         return res.status(500).json({
 
             success: false,
-
             message: error.message
 
         });
@@ -366,23 +209,21 @@ exports.updateBanner = async (req, res) => {
 };
 
 
-// ==========================
-// DELETE PROMO BANNER
-// ==========================
+// ================= DELETE =================
 
 exports.deleteBanner = async (req, res) => {
 
     try {
 
-        const banner = await PromoBanner.findById(req.params.id);
+        const banner =
+            await PromoBanner.findById(req.params.id);
 
         if (!banner) {
 
             return res.status(404).json({
 
                 success: false,
-
-                message: "Promo Banner not found"
+                message: "Banner not found"
 
             });
 
@@ -393,8 +234,7 @@ exports.deleteBanner = async (req, res) => {
         return res.status(200).json({
 
             success: true,
-
-            message: "Promo Banner Deleted Successfully"
+            message: "Banner Deleted Successfully"
 
         });
 
@@ -403,7 +243,6 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({
 
             success: false,
-
             message: error.message
 
         });

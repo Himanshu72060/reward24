@@ -1,16 +1,11 @@
-const express =
-    require("express");
+const express = require("express");
+const multer = require("multer");
 
-const multer =
-    require("multer");
+const router = express.Router();
 
-const router =
-    express.Router();
-
-const upload =
-    multer({
-        dest: "uploads/"
-    });
+const upload = multer({
+    dest: "uploads/"
+});
 
 const {
 
@@ -24,53 +19,51 @@ const {
 
     deleteBanner
 
-} = require(
-    "../controllers/featuredTaskBannerController"
-);
+} = require("../controllers/featuredTaskBannerController");
 
+
+// CREATE
 router.post(
 
     "/",
 
-    upload.fields([
-
-        {
-            name:
-                "backgroundImage",
-            maxCount: 1
-        },
-
-        {
-            name:
-                "taskImage",
-            maxCount: 1
-        }
-
-    ]),
+    upload.single("backgroundImage"),
 
     createBanner
 
 );
 
+
+// GET ALL
 router.get(
     "/",
     getBanners
 );
 
+
+// GET SINGLE
 router.get(
     "/:id",
     getBanner
 );
 
+
+// UPDATE
 router.put(
+
     "/:id",
+
+    upload.single("backgroundImage"),
+
     updateBanner
+
 );
 
+
+// DELETE
 router.delete(
     "/:id",
     deleteBanner
 );
 
-module.exports =
-    router;
+module.exports = router;

@@ -108,8 +108,9 @@ exports.createReel = async (req, res) => {
 
             adBeforeStart: true,
 
-            adAfterFiveSeconds: true,
+            // adAfterFiveSeconds: true,
 
+            adAfterSeconds: 15,
             isApproved: true,
 
             isActive: true
