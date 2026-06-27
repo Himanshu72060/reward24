@@ -1,58 +1,39 @@
 const mongoose = require("mongoose");
 
-// ================= REWARDED AD =================
-
-const rewardedAdSchema = new mongoose.Schema({
-
+const rewardAdSchema = new mongoose.Schema({
     platform: {
         type: String,
-        enum: ["android", "ios"],
+        enum: ["android"],
         required: true
     },
-
-    adUnitId: {
+    ad_unit_id: {
         type: String,
         required: true,
         trim: true
     },
-
     status: {
         type: String,
         enum: ["active", "inactive"],
         default: "active"
     }
-
 });
 
-// ================= MAIN CONFIG =================
+const adConfigSchema = new mongoose.Schema(
+    {
+        app_id: {
+            type: String,
+            required: true,
+            trim: true
+        },
 
-const adConfigSchema = new mongoose.Schema({
+        rewarded_ads: [rewardAdSchema],
 
-    appId: {
-        type: String,
-        required: true,
-        trim: true
+        isActive: {
+            type: Boolean,
+            default: true
+        }
     },
-
-    rewardedAds: [rewardedAdSchema],
-
-    // Reel open hone ke kitne second baad next ad dikhani hai
-    adIntervalSeconds: {
-        type: Number,
-        default: 5
-    },
-
-    isActive: {
-        type: Boolean,
-        default: true
-    }
-
-}, {
-    timestamps: true
-});
-
-module.exports = mongoose.model(
-    "AdConfig",
-    adConfigSchema
+    { timestamps: true }
 );
 
+module.exports = mongoose.model("AdConfig", adConfigSchema);
