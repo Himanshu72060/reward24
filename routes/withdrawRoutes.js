@@ -7,145 +7,198 @@ const router =
 const auth =
     require("../middleware/authMiddleware");
 
+// const {
+
+//     createUpiWithdraw,
+//     createBankWithdraw,
+
+//     getTerms,
+
+//     getMyUpiWithdraws,
+//     getMyBankWithdraws,
+
+//     getAllUpiWithdraws,
+//     getAllBankWithdraws,
+
+//     approveUpiWithdraw,
+//     rejectUpiWithdraw,
+
+//     approveBankWithdraw,
+//     rejectBankWithdraw,
+
+//     createTerm,
+//     updateTerm,
+//     deleteTerm
+
+// } = require(
+//     "../controllers/withdrawController"
+// );
+
+
+// // ==============================
+// // USER ROUTES
+// // ==============================
+
+// // UPI Withdraw
+// router.post(
+//     "/upi",
+//     auth,
+//     createUpiWithdraw
+// );
+
+// // Bank Withdraw
+// router.post(
+//     "/bank",
+//     auth,
+//     createBankWithdraw
+// );
+
+// // My UPI Withdraws
+// router.get(
+//     "/my-upi",
+//     auth,
+//     getMyUpiWithdraws
+// );
+
+// // My Bank Withdraws
+// router.get(
+//     "/my-bank",
+//     auth,
+//     getMyBankWithdraws
+// );
+
+// // Terms & Conditions
+// router.get(
+//     "/terms/:type",
+//     auth,
+//     getTerms
+// );
+
+
+// // ==============================
+// // ADMIN ROUTES
+// // ==============================
+
+// // All UPI Withdraws
+// router.get(
+//     "/admin/upi",
+//     auth,
+//     getAllUpiWithdraws
+// );
+
+// // All Bank Withdraws
+// router.get(
+//     "/admin/bank",
+//     auth,
+//     getAllBankWithdraws
+// );
+
+// // Approve UPI
+// router.put(
+//     "/upi/approve/:id",
+//     auth,
+//     approveUpiWithdraw
+// );
+
+// // Reject UPI
+// router.put(
+//     "/upi/reject/:id",
+//     auth,
+//     rejectUpiWithdraw
+// );
+
+// // Approve Bank
+// router.put(
+//     "/bank/approve/:id",
+//     auth,
+//     approveBankWithdraw
+// );
+
+// // Reject Bank
+// router.put(
+//     "/bank/reject/:id",
+//     auth,
+//     rejectBankWithdraw
+// );
+
+
+// // ==============================
+// // TERMS CRUD
+// // ==============================
+
+// // Create Term
+// router.post(
+//     "/term",
+//     auth,
+//     createTerm
+// );
+
+// // Update Term
+// router.put(
+//     "/term/:id",
+//     auth,
+//     updateTerm
+// );
+
+// // Delete Term
+// router.delete(
+//     "/term/:id",
+//     auth,
+//     deleteTerm
+// );
+
+// module.exports =
+//     router;
+
+const adminAuth = require("../middleware/adminMiddleware");
+
 const {
+    createWithdrawRequest,
+    getMyWithdrawHistory,
+    getAllWithdrawRequests,
+    getWithdrawById,
+    approveWithdraw,
+    rejectWithdraw
+} = require("../controllers/withdrawController");
 
-    createUpiWithdraw,
-    createBankWithdraw,
-
-    getTerms,
-
-    getMyUpiWithdraws,
-    getMyBankWithdraws,
-
-    getAllUpiWithdraws,
-    getAllBankWithdraws,
-
-    approveUpiWithdraw,
-    rejectUpiWithdraw,
-
-    approveBankWithdraw,
-    rejectBankWithdraw,
-
-    createTerm,
-    updateTerm,
-    deleteTerm
-
-} = require(
-    "../controllers/withdrawController"
-);
-
-
-// ==============================
-// USER ROUTES
-// ==============================
-
-// UPI Withdraw
 router.post(
-    "/upi",
+    "/request",
     auth,
-    createUpiWithdraw
+    createWithdrawRequest
 );
 
-// Bank Withdraw
-router.post(
-    "/bank",
-    auth,
-    createBankWithdraw
-);
-
-// My UPI Withdraws
 router.get(
-    "/my-upi",
+    "/history",
     auth,
-    getMyUpiWithdraws
+    getMyWithdrawHistory
 );
-
-// My Bank Withdraws
-router.get(
-    "/my-bank",
-    auth,
-    getMyBankWithdraws
-);
-
-// Terms & Conditions
-router.get(
-    "/terms/:type",
-    auth,
-    getTerms
-);
-
 
 // ==============================
 // ADMIN ROUTES
 // ==============================
 
-// All UPI Withdraws
 router.get(
-    "/admin/upi",
-    auth,
-    getAllUpiWithdraws
+    "/admin",
+    adminAuth,
+    getAllWithdrawRequests
 );
 
-// All Bank Withdraws
 router.get(
-    "/admin/bank",
-    auth,
-    getAllBankWithdraws
+    "/admin/:id",
+    adminAuth,
+    getWithdrawById
 );
 
-// Approve UPI
 router.put(
-    "/upi/approve/:id",
-    auth,
-    approveUpiWithdraw
+    "/admin/approve/:id",
+    adminAuth,
+    approveWithdraw
 );
 
-// Reject UPI
 router.put(
-    "/upi/reject/:id",
-    auth,
-    rejectUpiWithdraw
+    "/admin/reject/:id",
+    adminAuth,
+    rejectWithdraw
 );
 
-// Approve Bank
-router.put(
-    "/bank/approve/:id",
-    auth,
-    approveBankWithdraw
-);
-
-// Reject Bank
-router.put(
-    "/bank/reject/:id",
-    auth,
-    rejectBankWithdraw
-);
-
-
-// ==============================
-// TERMS CRUD
-// ==============================
-
-// Create Term
-router.post(
-    "/term",
-    auth,
-    createTerm
-);
-
-// Update Term
-router.put(
-    "/term/:id",
-    auth,
-    updateTerm
-);
-
-// Delete Term
-router.delete(
-    "/term/:id",
-    auth,
-    deleteTerm
-);
-
-module.exports =
-    router;
+module.exports = router;

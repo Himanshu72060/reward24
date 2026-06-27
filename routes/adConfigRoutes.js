@@ -1,18 +1,69 @@
 const express = require("express");
+
 const router = express.Router();
 
-const controller = require("../controllers/adConfigController");
+const auth = require("../middleware/authMiddleware");
 
-// CREATE
-router.post("/create", controller.createAdConfig);
+const role = require("../middleware/roleMiddleware");
 
-// GET (FINAL APP RESPONSE)
-router.get("/", controller.getAdConfig);
+const {
 
-// UPDATE
-router.put("/update", controller.updateAdConfig);
+    createAdConfig,
 
-// DELETE
-router.delete("/delete/:id", controller.deleteAdConfig);
+    getAdConfig,
+
+    updateAdConfig,
+
+    deleteAdConfig
+
+} = require("../controllers/adConfigController");
+
+
+// ======================
+// ADMIN CREATE AD CONFIG
+// ======================
+
+router.post(
+    "/",
+    auth,
+    role("admin"),
+    createAdConfig
+);
+
+
+// ======================
+// USER GET AD CONFIG
+// ======================
+
+router.get(
+    "/",
+    auth,
+    getAdConfig
+);
+
+
+// ======================
+// ADMIN UPDATE AD CONFIG
+// ======================
+
+router.put(
+    "/",
+    auth,
+    role("admin"),
+    updateAdConfig
+);
+
+
+// ======================
+// ADMIN DELETE AD CONFIG
+// ======================
+
+router.delete(
+    "/:id",
+    auth,
+    role("admin"),
+    deleteAdConfig
+);
+
 
 module.exports = router;

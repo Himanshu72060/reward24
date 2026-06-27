@@ -4,64 +4,55 @@ const express =
 const router =
     express.Router();
 
-const auth =
-    require("../middleware/authMiddleware");
-
 const {
 
-    createReferEarn,
+    createEarning,
 
-    getReferEarns,
+    getEarnings,
 
-    getSingleReferEarn,
+    getSingleEarning,
 
-    updateReferEarn,
+    updateEarning,
 
-    deleteReferEarn
+    deleteEarning
 
 } = require(
-    "../controllers/referEarnController"
+    "../controllers/earningController"
 );
 
 // CREATE
 
 router.post(
     "/",
-    auth,
-    createReferEarn
+    createEarning
 );
 
 // GET ALL
 
 router.get(
     "/",
-    auth,
-    getReferEarns
+    getEarnings
 );
 
 // GET SINGLE
 
 router.get(
     "/:id",
-    auth,
-    getSingleReferEarn
+    getSingleEarning
 );
 
 // UPDATE
 
 router.put(
     "/:id",
-    auth,
-    updateReferEarn
+    updateEarning
 );
 
 // DELETE
 
 router.delete(
     "/:id",
-    auth,
-    deleteReferEarn
+    deleteEarning
 );
 
-module.exports =
-    router;
+module.exports = router;

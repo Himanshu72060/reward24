@@ -1,21 +1,21 @@
-const ReferEarn =
-    require("../models/ReferEarn");
+const Earning =
+    require("../models/Earning");
 
-// ================= CREATE =================
+// CREATE
 
-exports.createReferEarn =
+exports.createEarning =
     async (req, res) => {
 
         try {
 
-            const referEarn =
-                await ReferEarn.create(
+            const earning =
+                await Earning.create(
                     req.body
                 );
 
             res.status(201).json({
                 success: true,
-                data: referEarn
+                data: earning
             });
 
         } catch (error) {
@@ -30,19 +30,19 @@ exports.createReferEarn =
 
     };
 
-// ================= GET ALL =================
+// GET ALL
 
-exports.getReferEarns =
+exports.getEarnings =
     async (req, res) => {
 
         try {
 
-            const referEarns =
-                await ReferEarn.find();
+            const earnings =
+                await Earning.find();
 
             res.status(200).json({
                 success: true,
-                data: referEarns
+                data: earnings
             });
 
         } catch (error) {
@@ -57,32 +57,21 @@ exports.getReferEarns =
 
     };
 
-// ================= GET SINGLE =================
+// GET SINGLE
 
-exports.getSingleReferEarn =
+exports.getSingleEarning =
     async (req, res) => {
 
         try {
 
-            const referEarn =
-                await ReferEarn.findById(
+            const earning =
+                await Earning.findById(
                     req.params.id
                 );
 
-            if (!referEarn) {
-
-                return res.status(404)
-                    .json({
-                        success: false,
-                        message:
-                            "Data Not Found"
-                    });
-
-            }
-
             res.status(200).json({
                 success: true,
-                data: referEarn
+                data: earning
             });
 
         } catch (error) {
@@ -97,29 +86,23 @@ exports.getSingleReferEarn =
 
     };
 
-// ================= UPDATE =================
+// UPDATE
 
-exports.updateReferEarn =
+exports.updateEarning =
     async (req, res) => {
 
         try {
 
-            const referEarn =
-                await ReferEarn.findByIdAndUpdate(
-
+            const earning =
+                await Earning.findByIdAndUpdate(
                     req.params.id,
-
                     req.body,
-
-                    {
-                        new: true
-                    }
-
+                    { new: true }
                 );
 
             res.status(200).json({
                 success: true,
-                data: referEarn
+                data: earning
             });
 
         } catch (error) {
@@ -134,14 +117,14 @@ exports.updateReferEarn =
 
     };
 
-// ================= DELETE =================
+// DELETE
 
-exports.deleteReferEarn =
+exports.deleteEarning =
     async (req, res) => {
 
         try {
 
-            await ReferEarn.findByIdAndDelete(
+            await Earning.findByIdAndDelete(
                 req.params.id
             );
 

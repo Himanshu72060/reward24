@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const dailyStreakSchema =
+
+const surveyEarningSchema =
     new mongoose.Schema({
 
         userId: {
@@ -9,22 +10,33 @@ const dailyStreakSchema =
             required: true
         },
 
-        streakDay: {
-            type: Number,
-            default: 1
+
+        surveyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Survey",
+            required: true
         },
 
-        rewardCoins: {
+
+        coins: {
             type: Number,
             required: true
+        },
+
+
+        status: {
+            type: String,
+            default: "completed"
         }
+
 
     }, {
         timestamps: true
     });
 
+
 module.exports =
     mongoose.model(
-        "DailyStreak",
-        dailyStreakSchema
+        "SurveyEarning",
+        surveyEarningSchema
     );

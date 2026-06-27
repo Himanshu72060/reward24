@@ -1,6 +1,6 @@
 const User =
     require("../models/User");
-
+const CoinTransaction = require("../models/CoinTransaction");
 const ReferralHistory =
     require("../models/ReferralHistory");
 
@@ -10,9 +10,15 @@ const bcrypt =
 const jwt =
     require("jsonwebtoken");
 
-const { nanoid } =
-    require("nanoid");
+// const { nanoid } =
+//     require("nanoid");
 
+const { customAlphabet } = require("nanoid");
+
+const nanoid = customAlphabet(
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789",
+    8
+);
 
 
 // SIGNUP
@@ -95,82 +101,152 @@ exports.signup = async (
 
 
 
-        // GENERATE REFERRAL CODE
-        const myReferralCode =
-            fullName
-                .slice(0, 3)
-                .toUpperCase() +
-            nanoid(5);
 
+        // const myReferralCode =
+        //     fullName
+        //         .slice(0, 3)
+        //         .toUpperCase() +
+        //     nanoid(5);
+
+
+        // ==============================
+        // GENERATE UNIQUE REFERRAL CODE
+        // ==============================
+
+        let myReferralCode;
+
+        let exists = true;
+
+        while (exists) {
+
+            myReferralCode = nanoid();
+
+            exists = await User.findOne({
+
+                myReferralCode
+
+            });
+
+        }
 
 
         // DEFAULT BONUS
         let signupCoins = 50;
 
+        // ==============================
+        // CHECK REFERRAL CODE
+        // ==============================
 
+        let referredBy = null;
 
-        // CREATE USER
-        const user =
-            await User.create({
+        if (referralCode) {
 
-                fullName,
+            const referrerUser = await User.findOne({
 
-                email,
-
-                mobileNumber,
-
-                password:
-                    hashedPassword,
-
-                myReferralCode,
-
-                referredBy:
-                    referralCode || "",
-
-                coins:
-                    signupCoins
+                myReferralCode: referralCode
 
             });
+
+            if (!referrerUser) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message: "Invalid Referral Code"
+
+                });
+
+            }
+
+            referredBy = referrerUser._id;
+
+            referrerUser.totalReferrals += 1;
+
+            await referrerUser.save();
+
+        }
+
+        // CREATE USER
+        // const user =
+        //     await User.create({
+
+        //         fullName,
+
+        //         email,
+
+        //         mobileNumber,
+
+        //         password:
+        //             hashedPassword,
+
+        //         myReferralCode,
+
+        //         referredBy:
+        //             referralCode || "",
+
+        //         coins:
+        //             signupCoins
+
+        //     });
+
+        const user = await User.create({
+
+            fullName,
+
+            email,
+
+            mobileNumber,
+
+            password: hashedPassword,
+
+            myReferralCode,
+
+            referredBy,
+
+            coins: signupCoins
+
+        });
 
 
 
         // REFERRAL SYSTEM
-        if (referralCode) {
+        // if (referralCode) {
 
-            const referrerUser =
-                await User.findOne({
-                    myReferralCode:
-                        referralCode
-                });
+        //     const referrerUser =
+        //         await User.findOne({
+        //             myReferralCode:
+        //                 referralCode
+        //         });
 
-            if (referrerUser) {
+        //     if (referrerUser) {
 
-                // ADD COINS
-                referrerUser.coins += 100;
+        //         // ADD COINS
+        //         referrerUser.coins += 100;
 
-                // TOTAL REFERRALS
-                referrerUser.totalReferrals += 1;
+        //         // TOTAL REFERRALS
+        //         referrerUser.totalReferrals += 1;
 
-                await referrerUser.save();
+        //         await referrerUser.save();
 
 
 
-                // SAVE HISTORY
-                await ReferralHistory.create({
+        //         // SAVE HISTORY
+        //         await ReferralHistory.create({
 
-                    referrerUser:
-                        referrerUser._id,
+        //             referrerUser:
+        //                 referrerUser._id,
 
-                    newUser:
-                        user._id,
+        //             newUser:
+        //                 user._id,
 
-                    referralCode,
+        //             referralCode,
 
-                    rewardCoins: 100
+        //             rewardCoins: 100
 
-                });
-            }
-        }
+        //         });
+        //     }
+        // }
 
 
 
@@ -272,18 +348,30 @@ exports.login = async (
 
 
         // JWT TOKEN
-        const token =
-            jwt.sign(
-                {
-                    id: user._id,
-                    name: user.fullName,
-                    profileImage: user.profileImage || ""
-                },
-                process.env.JWT_SECRET,
-                {
-                    expiresIn: "7d"
-                }
-            );
+        // const token =
+        //     jwt.sign(
+        //         {
+        //             id: user._id,
+        //             name: user.fullName,
+        //             profileImage: user.profileImage || ""
+        //         },
+        //         process.env.JWT_SECRET,
+        //         {
+        //             expiresIn: "7d"
+        //         }
+        //     );
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+                role: user.role,
+                name: user.fullName,
+                profileImage: user.profileImage || ""
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "7d"
+            });
 
 
 
@@ -316,23 +404,177 @@ exports.login = async (
 
 
 // PROFILE
-exports.profile = async (
-    req,
-    res
-) => {
+// exports.profile = async (
+//     req,
+//     res
+// ) => {
+
+//     try {
+
+//         const user =
+//             await User.findById(
+//                 req.user.id
+//             );
+
+//         res.status(200).json({
+
+//             success: true,
+
+//             user
+
+//         });
+
+//     } catch (error) {
+
+//         res.status(500).json({
+
+//             success: false,
+
+//             message:
+//                 error.message
+
+//         });
+//     }
+// };
+// ==============================
+// GET PROFILE
+// ==============================
+
+exports.profile = async (req, res) => {
 
     try {
 
-        const user =
-            await User.findById(
-                req.user.id
-            );
+        // const user = await User.findById(req.user.id)
+        //     .select("-password");
+
+        const user = await User.findById(req.user.id)
+            .populate(
+                "referredBy",
+                "fullName myReferralCode"
+            )
+            .select("-password");
+
+        if (!user) {
+
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+
+        }
+
+        // Get User Transactions
+        const transactions = await CoinTransaction.find({
+            userId: user._id
+        });
+
+        let totalCoins = 0;
+        let pendingCoins = 0;
+        let totalEarnedCoins = 0;
+        let totalWithdrawnCoins = 0;
+
+        transactions.forEach((transaction) => {
+
+            const coins = Number(transaction.coins || 0);
+
+            // Credit Transactions
+            if (
+                [
+                    "reward",
+                    "watch_ad",
+                    "daily_checkin",
+                    "spin",
+                    "referral",
+                    "bonus"
+                ].includes(transaction.type)
+            ) {
+
+                totalEarnedCoins += coins;
+
+                if (transaction.status === "pending") {
+
+                    pendingCoins += coins;
+
+                } else {
+
+                    totalCoins += coins;
+
+                }
+
+            }
+
+            // Withdraw Transactions
+            if (
+                transaction.type === "withdraw"
+            ) {
+
+                if (
+                    transaction.status === "approved" ||
+                    transaction.status === "completed"
+                ) {
+
+                    totalCoins -= coins;
+                    totalWithdrawnCoins += coins;
+
+                }
+
+            }
+
+        });
+
+        if (totalCoins < 0) {
+            totalCoins = 0;
+        }
 
         res.status(200).json({
 
             success: true,
 
-            user
+            message: "Profile fetched successfully",
+
+            user: {
+
+                _id: user._id,
+
+                fullName: user.fullName,
+
+                email: user.email,
+
+                mobileNumber: user.mobileNumber,
+
+                profileImage: user.profileImage,
+
+                myReferralCode: user.myReferralCode,
+
+                referredBy: user.referredBy,
+
+                role: user.role,
+
+                isBlocked: user.isBlocked,
+
+                totalReferrals: user.totalReferrals,
+
+                checkInStreak: user.checkInStreak,
+
+                dailySpinCount: user.dailySpinCount,
+
+                lastSpinDate: user.lastSpinDate,
+
+                lastCheckInDate: user.lastCheckInDate,
+
+                coins: totalCoins,
+
+                pendingCoins,
+
+                totalEarnedCoins,
+
+                totalWithdrawnCoins,
+
+                createdAt: user.createdAt,
+
+                updatedAt: user.updatedAt
+
+            }
 
         });
 
@@ -342,13 +584,13 @@ exports.profile = async (
 
             success: false,
 
-            message:
-                error.message
+            message: error.message
 
         });
-    }
-};
 
+    }
+
+};
 
 
 // REFERRAL HISTORY
@@ -464,7 +706,7 @@ exports.deleteUser = async (req, res) => {
         });
 
     }
-};    
+};
 
 
 // UPDATE PROFILE
@@ -551,4 +793,53 @@ exports.editProfile = async (req, res) => {
         });
 
     }
+};
+
+exports.getMyReferral = async (req, res) => {
+
+    try {
+
+        const user = await User.findById(req.user.id).select(
+            "fullName myReferralCode totalReferrals referralIncome"
+        );
+
+        if (!user) {
+
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+
+        }
+
+        return res.status(200).json({
+
+            success: true,
+
+            data: {
+
+                fullName: user.fullName,
+
+                referralCode: user.myReferralCode,
+
+                totalReferrals: user.totalReferrals,
+
+                referralIncome: user.referralIncome
+
+            }
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
 };

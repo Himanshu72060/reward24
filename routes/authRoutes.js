@@ -23,7 +23,8 @@ const {
 
     deleteUser,
 
-    editProfile
+    editProfile,
+    getMyReferral
 
 } = require(
     "../controllers/authController"
@@ -68,6 +69,10 @@ router.put(
     authMiddleware,
     editProfile
 );
-
+router.get(
+    "/my-referral",
+    authMiddleware,
+    getMyReferral
+);
 module.exports =
     router;

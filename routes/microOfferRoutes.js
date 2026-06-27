@@ -1,48 +1,123 @@
-const express =
-    require("express");
+const express = require("express");
 
-const router =
-    express.Router();
+const router = express.Router();
+
+const auth = require("../middleware/authMiddleware");
+
+const admin = require("../middleware/adminMiddleware");
 
 const {
 
+    // ADMIN
     createMicroOffer,
-
     getMicroOffers,
-
     getSingleMicroOffer,
-
     updateMicroOffer,
+    deleteMicroOffer,
 
-    deleteMicroOffer
+    // USER
+    getUserMicroOffers,
+    completeMicroOffer,
+    getMyMicroOfferHistory
 
-} = require(
-    "../controllers/microOfferController"
-);
+} = require("../controllers/microOfferController");
 
+
+// =====================================
+// ADMIN ROUTES
+// =====================================
+
+// CREATE
 router.post(
-    "/",
+
+    "/admin",
+
+    admin,
+
     createMicroOffer
+
 );
 
+// GET ALL
 router.get(
-    "/",
+
+    "/admin",
+
+    admin,
+
     getMicroOffers
+
 );
 
+// GET SINGLE
 router.get(
-    "/:id",
+
+    "/admin/:id",
+
+    admin,
+
     getSingleMicroOffer
+
 );
 
+// UPDATE
 router.put(
-    "/:id",
+
+    "/admin/:id",
+
+    admin,
+
     updateMicroOffer
+
 );
 
+// DELETE
 router.delete(
-    "/:id",
+
+    "/admin/:id",
+
+    admin,
+
     deleteMicroOffer
+
+);
+
+
+// =====================================
+// USER ROUTES
+// =====================================
+
+// GET ACTIVE OFFERS
+router.get(
+
+    "/",
+
+    auth,
+
+    getUserMicroOffers
+
+);
+
+// COMPLETE OFFER
+router.post(
+
+    "/complete/:id",
+
+    auth,
+
+    completeMicroOffer
+
+);
+
+// MY HISTORY
+router.get(
+
+    "/history",
+
+    auth,
+
+    getMyMicroOfferHistory
+
 );
 
 module.exports = router;

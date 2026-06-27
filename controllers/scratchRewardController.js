@@ -1,189 +1,435 @@
-const ScratchReward =
-    require(
-        "../models/ScratchReward"
-    );
+const ScratchReward = require("../models/ScratchReward");
+const ScratchHistory = require("../models/ScratchHistory");
+const User = require("../models/User");
+const CoinTransaction = require("../models/CoinTransaction");
+exports.createScratchReward = async (req, res) => {
 
-// ================= CREATE =================
+    try {
 
-exports.createScratchReward =
-    async (req, res) => {
+        const reward = await ScratchReward.create({
 
-        try {
+            title: req.body.title,
 
-            const reward =
-                await ScratchReward.create(
-                    req.body
-                );
+            description: req.body.description,
 
-            res.status(201).json({
+            rewardCoins: req.body.rewardCoins,
 
-                success: true,
+            image: req.body.image,
 
-                data: reward
+            isActive: req.body.isActive ?? true
 
-            });
+        });
 
-        } catch (error) {
+        return res.status(201).json({
 
-            res.status(500).json({
+            success: true,
+
+            message: "Scratch Reward Created",
+
+            data: reward
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+exports.getScratchRewards = async (req, res) => {
+
+    try {
+
+        const rewards = await ScratchReward.find()
+
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: rewards.length,
+
+            data: rewards
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+exports.getSingleScratchReward = async (req, res) => {
+
+    try {
+
+        const reward = await ScratchReward.findById(req.params.id);
+
+        if (!reward) {
+
+            return res.status(404).json({
 
                 success: false,
 
-                message:
-                    error.message
+                message: "Scratch Reward Not Found"
 
             });
 
         }
 
-    };
+        return res.status(200).json({
 
-// ================= GET ALL =================
+            success: true,
 
-exports.getScratchRewards =
-    async (req, res) => {
+            data: reward
 
-        try {
+        });
 
-            const rewards =
-                await ScratchReward.find()
+    } catch (error) {
 
-                    .sort({
-                        createdAt: -1
-                    });
+        return res.status(500).json({
 
-            res.status(200).json({
+            success: false,
 
-                success: true,
+            message: error.message
 
-                data: rewards
+        });
 
-            });
+    }
 
-        } catch (error) {
+};
 
-            res.status(500).json({
+exports.updateScratchReward = async (req, res) => {
+
+    try {
+
+        const reward = await ScratchReward.findByIdAndUpdate(
+
+            req.params.id,
+
+            req.body,
+
+            {
+
+                new: true
+
+            }
+
+        );
+
+        if (!reward) {
+
+            return res.status(404).json({
 
                 success: false,
 
-                message:
-                    error.message
+                message: "Scratch Reward Not Found"
 
             });
 
         }
 
-    };
+        return res.status(200).json({
 
-// ================= GET SINGLE =================
+            success: true,
 
-exports.getSingleScratchReward =
-    async (req, res) => {
+            message: "Scratch Reward Updated",
 
-        try {
+            data: reward
 
-            const reward =
-                await ScratchReward.findById(
-                    req.params.id
-                );
+        });
 
-            res.status(200).json({
+    } catch (error) {
 
-                success: true,
+        return res.status(500).json({
 
-                data: reward
+            success: false,
 
-            });
+            message: error.message
 
-        } catch (error) {
+        });
 
-            res.status(500).json({
+    }
+
+};
+
+exports.deleteScratchReward = async (req, res) => {
+
+    try {
+
+        const reward = await ScratchReward.findById(req.params.id);
+
+        if (!reward) {
+
+            return res.status(404).json({
 
                 success: false,
 
-                message:
-                    error.message
+                message: "Scratch Reward Not Found"
 
             });
 
         }
 
-    };
+        await reward.deleteOne();
 
-// ================= UPDATE =================
+        return res.status(200).json({
 
-exports.updateScratchReward =
-    async (req, res) => {
+            success: true,
 
-        try {
+            message: "Scratch Reward Deleted"
 
-            const reward =
-                await ScratchReward.findByIdAndUpdate(
+        });
 
-                    req.params.id,
+    } catch (error) {
 
-                    req.body,
+        return res.status(500).json({
 
-                    {
-                        new: true
-                    }
+            success: false,
 
-                );
+            message: error.message
 
-            res.status(200).json({
+        });
 
-                success: true,
+    }
 
-                data: reward
+};
 
+exports.getUserScratchRewards = async (req, res) => {
+
+    try {
+
+        const rewards = await ScratchReward.find({
+
+            isActive: true
+
+        }).sort({
+
+            createdAt: -1
+
+        });
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: rewards.length,
+
+            data: rewards
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+// =======================================
+// USER CLAIM SCRATCH REWARD
+// =======================================
+
+exports.claimScratchReward = async (req, res) => {
+
+    try {
+
+        const userId = req.user.id;
+        const rewardId = req.params.id;
+
+        // Check User
+        const user = await User.findById(userId);
+
+        if (!user) {
+
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
             });
 
-        } catch (error) {
+        }
 
-            res.status(500).json({
+        // Check Reward
+        const reward = await ScratchReward.findById(rewardId);
+
+        if (!reward || !reward.isActive) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Scratch reward not found"
+            });
+
+        }
+
+        // Already Claimed Check
+        const alreadyClaimed = await ScratchHistory.findOne({
+
+            userId,
+            scratchRewardId: rewardId
+
+        });
+
+        if (alreadyClaimed) {
+
+            return res.status(400).json({
 
                 success: false,
-
-                message:
-                    error.message
+                message: "Scratch reward already claimed"
 
             });
 
         }
 
-    };
+        // ==========================
+        // UPDATE USER WALLET
+        // ==========================
 
-// ================= DELETE =================
+        user.coins += reward.rewardCoins;
 
-exports.deleteScratchReward =
-    async (req, res) => {
+        user.totalEarnedCoins += reward.rewardCoins;
 
-        try {
+        await user.save();
 
-            await ScratchReward.findByIdAndDelete(
-                req.params.id
-            );
+        // ==========================
+        // CREATE COIN TRANSACTION
+        // ==========================
 
-            res.status(200).json({
+        await CoinTransaction.create({
 
-                success: true,
+            userId,
 
-                message:
-                    "Scratch Reward Deleted"
+            coins: reward.rewardCoins,
+
+            type: "bonus",
+
+            status: "completed",
+
+            description: `Scratch Reward : ${reward.title}`
+
+        });
+
+        // ==========================
+        // SAVE HISTORY
+        // ==========================
+
+        const history = await ScratchHistory.create({
+
+            userId,
+
+            scratchRewardId: reward._id,
+
+            rewardCoins: reward.rewardCoins
+
+        });
+
+        // ==========================
+        // UPDATE TOTAL CLAIMS
+        // ==========================
+
+        reward.totalClaims += 1;
+
+        await reward.save();
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Scratch reward claimed successfully",
+
+            rewardCoins: reward.rewardCoins,
+
+            totalCoins: user.coins,
+
+            data: history
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// =======================================
+// USER SCRATCH HISTORY
+// =======================================
+
+exports.getMyScratchHistory = async (req, res) => {
+
+    try {
+
+        const history = await ScratchHistory.find({
+
+            userId: req.user.id
+
+        })
+
+            .populate(
+
+                "scratchRewardId",
+
+                "title rewardCoins image"
+
+            )
+
+            .sort({
+
+                createdAt: -1
 
             });
 
-        } catch (error) {
+        return res.status(200).json({
 
-            res.status(500).json({
+            success: true,
 
-                success: false,
+            count: history.length,
 
-                message:
-                    error.message
+            data: history
 
-            });
+        });
 
-        }
+    } catch (error) {
 
-    };
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};

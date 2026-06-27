@@ -1,156 +1,424 @@
-const GiftCard =
-    require("../models/GiftCard");
+const GiftCard = require("../models/GiftCard");
 
-// CREATE
+const User = require("../models/User");
 
-exports.createGiftCard =
-    async (req, res) => {
+const CoinTransaction = require("../models/CoinTransaction");
 
-        try {
 
-            const card =
-                await GiftCard.create(
-                    req.body
-                );
+// ================= CREATE GIFT CARD (ADMIN) =================
 
-            res.status(201).json({
-                success: true,
-                data: card
-            });
+exports.createGiftCard = async (req, res) => {
 
-        } catch (error) {
+    try {
 
-            res.status(500).json({
+        const {
+
+            title,
+
+            amount,
+
+            requiredCoins,
+
+            code,
+
+            color
+
+        } = req.body;
+
+        const existing = await GiftCard.findOne({
+
+            code
+
+        });
+
+        if (existing) {
+
+            return res.status(400).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Gift Card Code already exists"
+
             });
 
         }
 
-    };
+        const card = await GiftCard.create({
 
-// GET ALL
+            title,
 
-exports.getGiftCards =
-    async (req, res) => {
+            amount,
 
-        try {
+            requiredCoins,
 
-            const cards =
-                await GiftCard.find()
-                    .sort({
-                        createdAt: -1
-                    });
+            code,
 
-            res.json({
-                success: true,
-                data: cards
-            });
+            color
 
-        } catch (error) {
+        });
 
-            res.status(500).json({
+        return res.status(201).json({
+
+            success: true,
+
+            message: "Gift Card Created Successfully",
+
+            data: card
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ================= GET ALL GIFT CARDS =================
+
+exports.getGiftCards = async (req, res) => {
+
+    try {
+
+        const cards = await GiftCard.find({
+
+            isActive: true,
+
+            isRedeemed: false
+
+        }).sort({
+
+            createdAt: -1
+
+        });
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: cards.length,
+
+            data: cards
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ================= GET SINGLE GIFT CARD =================
+
+exports.getGiftCard = async (req, res) => {
+
+    try {
+
+        const card = await GiftCard.findById(
+
+            req.params.id
+
+        );
+
+        if (!card) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Gift Card Not Found"
+
             });
 
         }
 
-    };
+        return res.status(200).json({
 
-// GET SINGLE
+            success: true,
 
-exports.getGiftCard =
-    async (req, res) => {
+            data: card
 
-        try {
+        });
 
-            const card =
-                await GiftCard.findById(
-                    req.params.id
-                );
+    } catch (error) {
 
-            res.json({
-                success: true,
-                data: card
-            });
+        return res.status(500).json({
 
-        } catch (error) {
+            success: false,
 
-            res.status(500).json({
+            message: error.message
+
+        });
+
+    }
+
+};
+
+// ================= UPDATE GIFT CARD =================
+
+exports.updateGiftCard = async (req, res) => {
+
+    try {
+
+        const card = await GiftCard.findById(req.params.id);
+
+        if (!card) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Gift Card Not Found"
+
             });
 
         }
 
-    };
+        card.title = req.body.title || card.title;
 
-// UPDATE
+        card.amount = req.body.amount || card.amount;
 
-exports.updateGiftCard =
-    async (req, res) => {
+        card.requiredCoins = req.body.requiredCoins || card.requiredCoins;
 
-        try {
+        card.code = req.body.code || card.code;
 
-            const card =
-                await GiftCard.findByIdAndUpdate(
+        card.color = req.body.color || card.color;
 
-                    req.params.id,
+        if (req.body.isActive !== undefined) {
 
-                    req.body,
+            card.isActive = req.body.isActive;
 
-                    {
-                        new: true
-                    }
+        }
 
-                );
+        await card.save();
 
-            res.json({
-                success: true,
-                data: card
-            });
+        return res.status(200).json({
 
-        } catch (error) {
+            success: true,
 
-            res.status(500).json({
+            message: "Gift Card Updated Successfully",
+
+            data: card
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ================= DELETE GIFT CARD =================
+
+exports.deleteGiftCard = async (req, res) => {
+
+    try {
+
+        const card = await GiftCard.findById(req.params.id);
+
+        if (!card) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Gift Card Not Found"
+
             });
 
         }
 
-    };
+        await GiftCard.findByIdAndDelete(req.params.id);
 
-// DELETE
+        return res.status(200).json({
 
-exports.deleteGiftCard =
-    async (req, res) => {
+            success: true,
 
-        try {
+            message: "Gift Card Deleted Successfully"
 
-            await GiftCard.findByIdAndDelete(
-                req.params.id
-            );
+        });
 
-            res.json({
-                success: true,
-                message:
-                    "Gift Card Deleted"
-            });
+    } catch (error) {
 
-        } catch (error) {
+        return res.status(500).json({
 
-            res.status(500).json({
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ================= USER REDEEM GIFT CARD =================
+
+// ================= USER REDEEM GIFT CARD =================
+
+exports.redeemGiftCard = async (req, res) => {
+
+    try {
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "User not found"
+
             });
 
         }
 
-    };
+        const card = await GiftCard.findById(req.params.id);
+
+        if (!card) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Gift Card not found"
+
+            });
+
+        }
+
+        if (!card.isActive) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Gift Card is inactive"
+
+            });
+
+        }
+
+        if (card.isRedeemed) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Gift Card already redeemed"
+
+            });
+
+        }
+
+        if (user.coins < card.requiredCoins) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: `You need ${card.requiredCoins} coins to redeem this gift card`
+
+            });
+
+        }
+
+        // Wallet Deduct
+
+        user.coins -= card.requiredCoins;
+
+        await user.save();
+
+        // Coin Transaction History
+
+        await CoinTransaction.create({
+
+            userId: user._id,
+
+            coins: card.requiredCoins,
+
+            type: "purchase",
+
+            status: "completed",
+
+            description: `Redeemed Gift Card - ${card.title}`
+
+        });
+
+        // Gift Card Redeemed
+
+        card.isRedeemed = true;
+
+        card.redeemedBy = user._id;
+
+        card.redeemedAt = new Date();
+
+        await card.save();
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Gift Card redeemed successfully",
+
+            giftCard: {
+
+                id: card._id,
+
+                title: card.title,
+
+                amount: card.amount,
+
+                code: card.code,
+
+                color: card.color
+
+            },
+
+            deductedCoins: card.requiredCoins,
+
+            remainingCoins: user.coins
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};

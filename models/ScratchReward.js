@@ -1,44 +1,44 @@
-const mongoose =
-    require("mongoose");
+const mongoose = require("mongoose");
 
-const scratchRewardSchema =
-    new mongoose.Schema({
+const scratchRewardSchema = new mongoose.Schema({
 
-        success: {
-
-            type: Boolean,
-
-            default: true
-        },
-
-        rewardAmount: {
-
-            type: Number,
-
-            required: true
-        },
-
-        updatedTotalCoins: {
-
-            type: Number,
-
-            required: true
-        },
-
-        message: {
-
-            type: String,
-
-            required: true
-        }
-
+    title: {
+        type: String,
+        required: true,
+        trim: true
     },
-        {
-            timestamps: true
-        });
 
-module.exports =
-    mongoose.model(
-        "ScratchReward",
-        scratchRewardSchema
-    );
+    description: {
+        type: String,
+        default: ""
+    },
+
+    rewardCoins: {
+        type: Number,
+        required: true,
+        min: 1
+    },
+
+    image: {
+        type: String,
+        default: ""
+    },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+
+    totalClaims: {
+        type: Number,
+        default: 0
+    }
+
+}, {
+    timestamps: true
+});
+
+module.exports = mongoose.model(
+    "ScratchReward",
+    scratchRewardSchema
+);

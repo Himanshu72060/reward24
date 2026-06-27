@@ -1,123 +1,91 @@
-const fs =
-    require("fs");
-
-const FeaturedTaskBanner =
-    require(
-        "../models/FeaturedTaskBanner"
-    );
-
-const uploadToBunny =
-    require(
-        "../utils/bunnyUpload"
-    );
-
+const fs = require("fs");
+const FeaturedTaskBanner = require("../models/FeaturedTaskBanner");
+const uploadToBunny = require("../utils/bunnyUpload");
 
 // CREATE
 
-exports.createBanner =
-    async (
-        req,
-        res
-    ) => {
+exports.createBanner = async (req, res) => {
+    console.log("BODY =>", req.body);
+    console.log("FILES =>", req.files);
+    console.log("FILE KEYS =>", Object.keys(req.files || {}));
+    try {
 
-        try {
+        let backgroundImageUrl = "";
+        let taskImageUrl = "";
 
-            let backgroundImageUrl =
-                "";
+        // Background Image Upload
+        if (req.files?.backgroundImage?.length) {
+            console.log("Background file =>", req.files.backgroundImage?.[0]);
 
-            let taskImageUrl =
-                "";
+            const file = req.files.backgroundImage[0];
 
-            if (
-                req.files?.backgroundImage
-            ) {
+            const fileBuffer = fs.readFileSync(file.path);
 
-                const file =
-                    req.files
-                        .backgroundImage[0];
+            backgroundImageUrl = await uploadToBunny(
+                fileBuffer,
+                `${Date.now()}-${file.originalname}`,
+                "featured-task-banners/backgrounds"
+            );
 
-                backgroundImageUrl =
-                    await uploadToBunny(
-                        file.path,
-                        Date.now() +
-                        "-" +
-                        file.originalname
-                    );
-
-                fs.unlinkSync(
-                    file.path
-                );
-            }
-
-            if (
-                req.files?.taskImage
-            ) {
-
-                const file =
-                    req.files
-                        .taskImage[0];
-
-                taskImageUrl =
-                    await uploadToBunny(
-                        file.path,
-                        Date.now() +
-                        "-" +
-                        file.originalname
-                    );
-
-                fs.unlinkSync(
-                    file.path
-                );
-            }
-
-            const banner =
-                await FeaturedTaskBanner.create({
-
-                    tagText:
-                        req.body.tagText,
-
-                    title:
-                        req.body.title,
-
-                    subtitle:
-                        req.body.subtitle,
-
-                    backgroundImageUrl,
-
-                    taskImageUrl,
-
-                    startColorHex:
-                        req.body.startColorHex,
-
-                    endColorHex:
-                        req.body.endColorHex,
-
-                    tagColorHex:
-                        req.body.tagColorHex,
-
-                    buttonText:
-                        req.body.buttonText
-
-                });
-
-            res.status(201)
-                .json({
-                    success: true,
-                    data: banner
-                });
-
-        } catch (error) {
-
-            res.status(500)
-                .json({
-                    success: false,
-                    message:
-                        error.message
-                });
-
+            fs.unlinkSync(file.path);
         }
 
-    };
+        // Task Image Upload
+        if (req.files?.taskImage?.length) {
+            console.log("Task file =>", req.files.taskImage?.[0]);
+
+            const file = req.files.taskImage[0];
+
+            const fileBuffer = fs.readFileSync(file.path);
+
+            taskImageUrl = await uploadToBunny(
+                fileBuffer,
+                `${Date.now()}-${file.originalname}`,
+                "featured-task-banners/tasks"
+            );
+
+            fs.unlinkSync(file.path);
+        }
+
+        const banner = await FeaturedTaskBanner.create({
+
+            tagText: req.body.tagText,
+
+            title: req.body.title,
+
+            subtitle: req.body.subtitle,
+
+            backgroundImageUrl,
+
+            taskImageUrl,
+
+            startColorHex: req.body.startColorHex,
+
+            endColorHex: req.body.endColorHex,
+
+            tagColorHex: req.body.tagColorHex,
+
+            buttonText: req.body.buttonText
+
+        });
+
+        res.status(201).json({
+            success: true,
+            data: banner
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+};
+
 
 
 // GET ALL

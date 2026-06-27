@@ -1,99 +1,195 @@
 const AdConfig = require("../models/adConfigModel");
 
-/* ================= CREATE CONFIG ================= */
+// ================= CREATE CONFIG (ADMIN) =================
+
 exports.createAdConfig = async (req, res) => {
+
     try {
 
-        // Check existing config
-        const existingConfig = await AdConfig.findOne();
+        const existing = await AdConfig.findOne();
 
-        if (existingConfig) {
+        if (existing) {
+
             return res.status(400).json({
-                status: false,
-                message: "Ad Configuration already exists. Delete the existing configuration before creating a new one."
+                success: false,
+                message: "Ad configuration already exists"
             });
+
         }
 
         const config = await AdConfig.create(req.body);
 
-        res.status(201).json({
-            status: true,
-            message: "Ad Configuration Created Successfully",
+        return res.status(201).json({
+
+            success: true,
+
+            message: "Ad configuration created successfully",
+
             data: config
+
         });
 
-    } catch (err) {
-        res.status(500).json({
-            status: false,
-            message: err.message
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
         });
+
     }
+
 };
 
-/* ================= GET CONFIG (MAIN RESPONSE) ================= */
+
+// ================= GET CONFIG (USER) =================
+
 exports.getAdConfig = async (req, res) => {
-    try {
-        const configs = await AdConfig.find();
 
-        res.json({
-            status: true,
-            count: configs.length,
-            data: configs
-        });
-
-    } catch (err) {
-        res.status(500).json({
-            status: false,
-            message: err.message
-        });
-    }
-};
-
-/* ================= UPDATE CONFIG ================= */
-exports.updateAdConfig = async (req, res) => {
-    try {
-        const config = await AdConfig.findOneAndUpdate(
-            { isActive: true },
-            req.body,
-            { new: true }
-        );
-
-        res.json({
-            status: true,
-            message: "Ad Configuration Updated",
-            data: config
-        });
-
-    } catch (err) {
-        res.status(500).json({
-            status: false,
-            message: err.message
-        });
-    }
-};
-
-// DELETE CONFIG (IF NEEDED)
-exports.deleteAdConfig = async (req, res) => {
     try {
 
-        const config = await AdConfig.findByIdAndDelete(req.params.id);
+        const config = await AdConfig.findOne({
+
+            isActive: true
+
+        });
 
         if (!config) {
+
             return res.status(404).json({
-                status: false,
-                message: "Ad Configuration not found"
+
+                success: false,
+
+                message: "Ad configuration not found"
+
             });
+
         }
 
-        res.json({
-            status: true,
-            message: "Ad Configuration deleted successfully"
+        return res.status(200).json({
+
+            success: true,
+
+            data: config
+
         });
 
-    } catch (err) {
-        res.status(500).json({
-            status: false,
-            message: err.message
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
         });
+
     }
+
+};
+
+
+// ================= UPDATE CONFIG (ADMIN) =================
+
+exports.updateAdConfig = async (req, res) => {
+
+    try {
+
+        const config = await AdConfig.findOneAndUpdate(
+
+            { isActive: true },
+
+            req.body,
+
+            {
+
+                new: true
+
+            }
+
+        );
+
+        if (!config) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Ad configuration not found"
+
+            });
+
+        }
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Ad configuration updated successfully",
+
+            data: config
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ================= DELETE CONFIG (ADMIN) =================
+
+exports.deleteAdConfig = async (req, res) => {
+
+    try {
+
+        const config = await AdConfig.findByIdAndDelete(
+
+            req.params.id
+
+        );
+
+        if (!config) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Ad configuration not found"
+
+            });
+
+        }
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Ad configuration deleted successfully"
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
 };

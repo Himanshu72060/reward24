@@ -1,102 +1,189 @@
 const mongoose = require("mongoose");
 
-// QUICK OFFERS
+// ================= QUICK OFFER =================
 
-const quickOfferSchema =
-    new mongoose.Schema({
+const quickOfferSchema = new mongoose.Schema({
 
-        coins: String,
+    title: {
+        type: String,
+        required: true
+    },
 
-        time: String,
+    rewardCoins: {
+        type: Number,
+        required: true
+    },
 
-        color: String
+    estimatedTime: {
+        type: String,
+        default: ""
+    },
 
-    });
+    color: {
+        type: String,
+        default: "#4CAF50"
+    },
 
-// CURATED ADS
+    link: {
+        type: String,
+        default: ""
+    },
 
-const curatedAdSchema =
-    new mongoose.Schema({
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 
-        title: String,
+}, { _id: true });
 
-        duration: String,
 
-        reward: String,
+// ================= CURATED ADS =================
 
-        link: String
+const curatedAdSchema = new mongoose.Schema({
 
-    });
+    title: {
+        type: String,
+        required: true
+    },
 
-// PTC PARTNERS
+    duration: {
+        type: String,
+        default: ""
+    },
 
-const ptcPartnerSchema =
-    new mongoose.Schema({
+    rewardCoins: {
+        type: Number,
+        required: true
+    },
 
-        name: String,
+    link: {
+        type: String,
+        default: ""
+    },
 
-        sub: String,
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 
-        link: String,
+}, { _id: true });
 
-        coins: String,
 
-        stars: Number
+// ================= PTC PARTNER =================
 
-    });
+const ptcPartnerSchema = new mongoose.Schema({
 
-// TASK DETAILS
+    name: {
+        type: String,
+        required: true
+    },
 
-const taskDetailSchema =
-    new mongoose.Schema({
+    sub: {
+        type: String,
+        default: ""
+    },
 
-        bannerText: String,
+    rewardCoins: {
+        type: Number,
+        required: true
+    },
 
-        bonusText: String,
+    stars: {
+        type: Number,
+        default: 5
+    },
 
-        infoText: String,
+    link: {
+        type: String,
+        default: ""
+    },
 
-        importantTips: [String],
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 
-        moreEarningTips: [String],
+}, { _id: true });
 
-        noteText: String
 
-    });
+// ================= TASK DETAILS =================
 
-// MAIN MODEL
+const taskDetailSchema = new mongoose.Schema({
 
-const microOfferSchema =
-    new mongoose.Schema({
+    bannerText: {
+        type: String,
+        default: ""
+    },
 
-        screenTitle: {
-            type: String,
-            required: true
-        },
+    bonusText: {
+        type: String,
+        default: ""
+    },
 
-        quickOffers: [
-            quickOfferSchema
-        ],
+    infoText: {
+        type: String,
+        default: ""
+    },
 
-        curatedAds: [
-            curatedAdSchema
-        ],
+    importantTips: [{
+        type: String
+    }],
 
-        ptcPartners: [
-            ptcPartnerSchema
-        ],
+    moreEarningTips: [{
+        type: String
+    }],
 
-        taskDetails: [
-            taskDetailSchema
-        ]
+    noteText: {
+        type: String,
+        default: ""
+    }
+
+}, { _id: true });
+
+
+// ================= MAIN MODEL =================
+
+const microOfferSchema = new mongoose.Schema({
+
+    screenTitle: {
+
+        type: String,
+
+        required: true
 
     },
-        {
-            timestamps: true
-        });
 
-module.exports =
-    mongoose.model(
-        "MicroOffer",
-        microOfferSchema
-    );
+    quickOffers: [quickOfferSchema],
+
+    curatedAds: [curatedAdSchema],
+
+    ptcPartners: [ptcPartnerSchema],
+
+    taskDetails: [taskDetailSchema],
+
+    totalCompleted: {
+
+        type: Number,
+
+        default: 0
+
+    },
+
+    isActive: {
+
+        type: Boolean,
+
+        default: true
+
+    }
+
+}, {
+
+    timestamps: true
+
+});
+
+module.exports = mongoose.model(
+    "MicroOffer",
+    microOfferSchema
+);

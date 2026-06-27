@@ -1,95 +1,141 @@
-const mongoose =
-    require("mongoose");
+const mongoose = require("mongoose");
 
-// GAME STEPS
+// ================= GAME STEP =================
 
-const gameStepSchema =
-    new mongoose.Schema({
+const gameStepSchema = new mongoose.Schema({
 
-        id: String,
+    stepId: {
+        type: String,
+        required: true
+    },
 
-        stepTitle: String,
+    stepTitle: {
+        type: String,
+        required: true
+    },
 
-        stepCoins: String
+    rewardCoins: {
+        type: Number,
+        required: true
+    }
 
-    });
+}, { _id: true });
 
-// RULES
 
-const ruleCardSchema =
-    new mongoose.Schema({
+// ================= RULE CARD =================
 
-        icon: String,
+const ruleCardSchema = new mongoose.Schema({
 
-        title: String,
+    icon: {
+        type: String,
+        default: ""
+    },
 
-        sub: String
+    title: {
+        type: String,
+        required: true
+    },
 
-    });
+    sub: {
+        type: String,
+        default: ""
+    }
 
-// CAMPAIGN DETAILS
+}, { _id: true });
 
-const campaignDetailSchema =
-    new mongoose.Schema({
 
-        steps: [
-            gameStepSchema
-        ],
+// ================= CAMPAIGN DETAIL =================
 
-        instructions: [String],
+const campaignDetailSchema = new mongoose.Schema({
 
-        rules: [
-            ruleCardSchema
-        ]
+    steps: [gameStepSchema],
 
-    });
+    instructions: [{
+        type: String
+    }],
 
-// GAME MODEL
+    rules: [ruleCardSchema]
 
-const gameSchema =
-    new mongoose.Schema({
+}, { _id: true });
 
-        title: {
-            type: String,
-            required: true
-        },
 
-        subTitle: {
-            type: String,
-            required: true
-        },
+// ================= GAME =================
 
-        rating: {
-            type: String,
-            required: true
-        },
+const gameSchema = new mongoose.Schema({
 
-        imageUrl: {
-            type: String,
-            required: true
-        },
+    title: {
 
-        accentColor: {
-            type: String,
-            required: true
-        },
+        type: String,
 
-        playStoreUrl: {
-            type: String,
-            required: true
-        },
-
-        campaignDetails: [
-            campaignDetailSchema
-        ]
+        required: true
 
     },
-        {
-            timestamps: true
-        });
 
-module.exports =
-    mongoose.model(
-        "Game",
-        gameSchema
-    );
+    subTitle: {
+
+        type: String,
+
+        required: true
+
+    },
+
+    rating: {
+
+        type: String,
+
+        default: "0"
+
+    },
+
+    imageUrl: {
+
+        type: String,
+
+        required: true
+
+    },
+
+    accentColor: {
+
+        type: String,
+
+        default: "#4CAF50"
+
+    },
+
+    playStoreUrl: {
+
+        type: String,
+
+        required: true
+
+    },
+
+    campaignDetails: [campaignDetailSchema],
+
+    totalCompleted: {
+
+        type: Number,
+
+        default: 0
+
+    },
+
+    isActive: {
+
+        type: Boolean,
+
+        default: true
+
+    }
+
+}, {
+
+    timestamps: true
+
+});
+
+module.exports = mongoose.model(
+    "Game",
+    gameSchema
+);

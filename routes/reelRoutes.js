@@ -1,37 +1,189 @@
 const express = require("express");
+
 const router = express.Router();
 
-const auth = require("../middleware/authMiddleware");
-const adminAuth = require("../middleware/adminMiddleware");
 const upload = require("../middleware/upload");
 
+const auth = require("../middleware/authMiddleware");
+
+const admin = require("../middleware/adminMiddleware");
+
 const {
+
+    // ADMIN
+
     createReel,
-    getReels,
+
+    getAllReels,
+
     getSingleReel,
-    getMyUploadedReels,
+
+    updateReel,
+
     deleteReel,
-    likeReel,
-    shareReel,
-    watchReward,
+
+    // USER
+
+    getUserReels,
+
+    completeReel,
+
+    getMyReelHistory
+
 } = require("../controllers/reelController");
 
-// ADMIN
-router.post("/", adminAuth, upload.single("video"), createReel);
 
-router.get("/my-reels", adminAuth, getMyUploadedReels);
+// ==========================================
+// ADMIN ROUTES
+// ==========================================
 
-router.delete("/:id", adminAuth, deleteReel);
+// CREATE REEL
 
-// USER
-router.get("/", auth, getReels);
+router.post(
 
-router.get("/:id", auth, getSingleReel);
+    "/admin",
 
-router.put("/like/:id", auth, likeReel);
+    admin,
 
-router.put("/share/:id", auth, shareReel);
+    upload.fields([
 
-router.post("/watch-reward", auth, watchReward);
+        {
+
+            name: "video",
+
+            maxCount: 1
+
+        },
+
+        {
+
+            name: "image",
+
+            maxCount: 1
+
+        }
+
+    ]),
+
+    createReel
+
+);
+
+
+// GET ALL
+
+router.get(
+
+    "/admin",
+
+    admin,
+
+    getAllReels
+
+);
+
+
+// GET SINGLE
+
+router.get(
+
+    "/admin/:id",
+
+    admin,
+
+    getSingleReel
+
+);
+
+
+// UPDATE
+
+router.put(
+
+    "/admin/:id",
+
+    admin,
+
+    upload.fields([
+
+        {
+
+            name: "video",
+
+            maxCount: 1
+
+        },
+
+        {
+
+            name: "image",
+
+            maxCount: 1
+
+        }
+
+    ]),
+
+    updateReel
+
+);
+
+
+// DELETE
+
+router.delete(
+
+    "/admin/:id",
+
+    admin,
+
+    deleteReel
+
+);
+
+
+
+// ==========================================
+// USER ROUTES
+// ==========================================
+
+
+// GET ACTIVE REELS
+
+router.get(
+
+    "/",
+
+    auth,
+
+    getUserReels
+
+);
+
+
+// COMPLETE REEL
+
+router.post(
+
+    "/complete/:id",
+
+    auth,
+
+    completeReel
+
+);
+
+
+// REEL HISTORY
+
+router.get(
+
+    "/history",
+
+    auth,
+
+    getMyReelHistory
+
+);
 
 module.exports = router;

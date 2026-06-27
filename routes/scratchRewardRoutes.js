@@ -1,67 +1,90 @@
-const express =
-    require("express");
+const express = require("express");
 
-const router =
-    express.Router();
+const router = express.Router();
 
-const auth =
-    require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
+const admin = require("../middleware/adminMiddleware");
 
 const {
 
+    // ADMIN
     createScratchReward,
-
     getScratchRewards,
-
     getSingleScratchReward,
-
     updateScratchReward,
+    deleteScratchReward,
 
-    deleteScratchReward
+    // USER
+    getUserScratchRewards,
+    claimScratchReward,
+    getMyScratchHistory
 
-} = require(
-    "../controllers/scratchRewardController"
-);
+} = require("../controllers/scratchRewardController");
 
-// CREATE
 
+// =======================================
+// ADMIN ROUTES
+// =======================================
+
+// Create Scratch Reward
 router.post(
-    "/",
-    auth,
+    "/admin",
+    admin,
     createScratchReward
 );
 
-// GET ALL
-
+// Get All Scratch Rewards
 router.get(
-    "/",
-    auth,
+    "/admin",
+    admin,
     getScratchRewards
 );
 
-// GET SINGLE
-
+// Get Single Scratch Reward
 router.get(
-    "/:id",
-    auth,
+    "/admin/:id",
+    admin,
     getSingleScratchReward
 );
 
-// UPDATE
-
+// Update Scratch Reward
 router.put(
-    "/:id",
-    auth,
+    "/admin/:id",
+    admin,
     updateScratchReward
 );
 
-// DELETE
-
+// Delete Scratch Reward
 router.delete(
-    "/:id",
-    auth,
+    "/admin/:id",
+    admin,
     deleteScratchReward
 );
 
-module.exports =
-    router;
+
+// =======================================
+// USER ROUTES
+// =======================================
+
+// Get Active Scratch Rewards
+router.get(
+    "/",
+    auth,
+    getUserScratchRewards
+);
+
+// Claim Scratch Reward
+router.post(
+    "/claim/:id",
+    auth,
+    claimScratchReward
+);
+
+// My Scratch History
+router.get(
+    "/history",
+    auth,
+    getMyScratchHistory
+);
+
+module.exports = router;

@@ -1,147 +1,579 @@
-const MicroOffer =
-    require("../models/MicroOffer");
+const MicroOffer = require("../models/MicroOffer");
+const MicroOfferHistory = require("../models/MicroOfferHistory");
+const User = require("../models/User");
+const CoinTransaction = require("../models/CoinTransaction");
 
-// CREATE
 
-exports.createMicroOffer =
-    async (req, res) => {
+// ======================================
+// ADMIN - CREATE MICRO OFFER
+// ======================================
 
-        try {
+exports.createMicroOffer = async (req, res) => {
 
-            const data =
-                await MicroOffer.create(
-                    req.body
-                );
+    try {
 
-            res.status(201).json({
-                success: true,
-                data
-            });
+        const {
 
-        } catch (error) {
+            screenTitle,
 
-            res.status(500).json({
+            quickOffers,
+
+            curatedAds,
+
+            ptcPartners,
+
+            taskDetails
+
+        } = req.body;
+
+        if (!screenTitle) {
+
+            return res.status(400).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Screen title is required"
+
             });
 
         }
 
-    };
+        const microOffer = await MicroOffer.create({
 
-// GET ALL
+            screenTitle,
 
-exports.getMicroOffers =
-    async (req, res) => {
+            quickOffers: quickOffers || [],
 
-        try {
+            curatedAds: curatedAds || [],
 
-            const data =
-                await MicroOffer.find();
+            ptcPartners: ptcPartners || [],
 
-            res.status(200).json({
-                success: true,
-                data
+            taskDetails: taskDetails || [],
+
+            totalCompleted: 0,
+
+            isActive: true
+
+        });
+
+        return res.status(201).json({
+
+            success: true,
+
+            message: "Micro Offer Created Successfully",
+
+            data: microOffer
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ======================================
+// ADMIN - GET ALL MICRO OFFERS
+// ======================================
+
+exports.getMicroOffers = async (req, res) => {
+
+    try {
+
+        const offers = await MicroOffer.find()
+
+            .sort({
+
+                createdAt: -1
+
             });
 
-        } catch (error) {
+        return res.status(200).json({
 
-            res.status(500).json({
+            success: true,
+
+            count: offers.length,
+
+            data: offers
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ======================================
+// ADMIN - GET SINGLE MICRO OFFER
+// ======================================
+
+exports.getSingleMicroOffer = async (req, res) => {
+
+    try {
+
+        const offer = await MicroOffer.findById(req.params.id);
+
+        if (!offer) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Micro Offer not found"
+
             });
 
         }
 
-    };
+        return res.status(200).json({
 
-// GET SINGLE
+            success: true,
 
-exports.getSingleMicroOffer =
-    async (req, res) => {
+            data: offer
 
-        try {
+        });
 
-            const data =
-                await MicroOffer.findById(
-                    req.params.id
-                );
+    } catch (error) {
 
-            res.status(200).json({
-                success: true,
-                data
-            });
+        return res.status(500).json({
 
-        } catch (error) {
+            success: false,
 
-            res.status(500).json({
+            message: error.message
+
+        });
+
+    }
+
+};
+
+// ======================================
+// ADMIN - UPDATE MICRO OFFER
+// ======================================
+
+exports.updateMicroOffer = async (req, res) => {
+
+    try {
+
+        const offer = await MicroOffer.findById(req.params.id);
+
+        if (!offer) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Micro Offer not found"
+
             });
 
         }
 
-    };
+        offer.screenTitle =
+            req.body.screenTitle || offer.screenTitle;
 
-// UPDATE
+        offer.quickOffers =
+            req.body.quickOffers || offer.quickOffers;
 
-exports.updateMicroOffer =
-    async (req, res) => {
+        offer.curatedAds =
+            req.body.curatedAds || offer.curatedAds;
 
-        try {
+        offer.ptcPartners =
+            req.body.ptcPartners || offer.ptcPartners;
 
-            const data =
-                await MicroOffer.findByIdAndUpdate(
-                    req.params.id,
-                    req.body,
-                    { new: true }
-                );
+        offer.taskDetails =
+            req.body.taskDetails || offer.taskDetails;
 
-            res.status(200).json({
-                success: true,
-                data
-            });
+        if (req.body.isActive !== undefined) {
 
-        } catch (error) {
+            offer.isActive = req.body.isActive;
 
-            res.status(500).json({
+        }
+
+        await offer.save();
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Micro Offer Updated Successfully",
+
+            data: offer
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ======================================
+// ADMIN - DELETE MICRO OFFER
+// ======================================
+
+exports.deleteMicroOffer = async (req, res) => {
+
+    try {
+
+        const offer = await MicroOffer.findById(req.params.id);
+
+        if (!offer) {
+
+            return res.status(404).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "Micro Offer not found"
+
             });
 
         }
 
-    };
+        await offer.deleteOne();
 
-// DELETE
+        return res.status(200).json({
 
-exports.deleteMicroOffer =
-    async (req, res) => {
+            success: true,
 
-        try {
+            message: "Micro Offer Deleted Successfully"
 
-            await MicroOffer.findByIdAndDelete(
-                req.params.id
-            );
+        });
 
-            res.status(200).json({
-                success: true,
-                message:
-                    "Micro Offer Deleted"
-            });
+    } catch (error) {
 
-        } catch (error) {
+        return res.status(500).json({
 
-            res.status(500).json({
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+// ======================================
+// USER - GET ACTIVE MICRO OFFERS
+// ======================================
+
+exports.getUserMicroOffers = async (req, res) => {
+
+    try {
+
+        const offers = await MicroOffer.find({
+
+            isActive: true
+
+        }).sort({
+
+            createdAt: -1
+
+        });
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: offers.length,
+
+            data: offers
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+// ======================================
+// USER - COMPLETE MICRO OFFER
+// ======================================
+
+exports.completeMicroOffer = async (req, res) => {
+
+    try {
+
+        const { section, offerIndex } = req.body;
+
+        if (!section || offerIndex === undefined) {
+
+            return res.status(400).json({
+
                 success: false,
-                message:
-                    error.message
+
+                message: "section and offerIndex are required"
+
             });
 
         }
 
-    };
+        const microOffer = await MicroOffer.findById(req.params.id);
+
+        if (!microOffer) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Micro Offer not found"
+
+            });
+
+        }
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found"
+
+            });
+
+        }
+
+        // ===============================
+        // ALREADY COMPLETED ?
+        // ===============================
+
+        const alreadyCompleted = await MicroOfferHistory.findOne({
+
+            userId: user._id,
+
+            microOfferId: microOffer._id,
+
+            section,
+
+            offerIndex
+
+        });
+
+        if (alreadyCompleted) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Offer already completed"
+
+            });
+
+        }
+
+        let offer = null;
+
+        // ===============================
+        // FIND OFFER
+        // ===============================
+
+        if (section === "quickOffer") {
+
+            offer = microOffer.quickOffers[offerIndex];
+
+        }
+
+        else if (section === "curatedAd") {
+
+            offer = microOffer.curatedAds[offerIndex];
+
+        }
+
+        else if (section === "ptcPartner") {
+
+            offer = microOffer.ptcPartners[offerIndex];
+
+        }
+
+        if (!offer) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Offer not found"
+
+            });
+
+        }
+
+        // ===============================
+        // WALLET UPDATE
+        // ===============================
+
+        user.coins += offer.rewardCoins;
+
+        user.totalEarnedCoins += offer.rewardCoins;
+
+        await user.save();
+
+        // ===============================
+        // HISTORY
+        // ===============================
+
+        const history = await MicroOfferHistory.create({
+
+            userId: user._id,
+
+            microOfferId: microOffer._id,
+
+            section,
+
+            offerIndex,
+
+            rewardCoins: offer.rewardCoins,
+
+            status: "completed"
+
+        });
+
+        // ===============================
+        // COIN TRANSACTION
+        // ===============================
+
+        await CoinTransaction.create({
+
+            userId: user._id,
+
+            coins: offer.rewardCoins,
+
+            type: "bonus",
+
+            status: "completed",
+
+            description: `${section} Reward`
+
+        });
+
+        // ===============================
+        // TOTAL COMPLETED
+        // ===============================
+
+        microOffer.totalCompleted += 1;
+
+        await microOffer.save();
+
+        return res.status(200).json({
+
+            success: true,
+
+            message: "Reward claimed successfully",
+
+            rewardCoins: offer.rewardCoins,
+
+            totalCoins: user.coins,
+
+            data: history
+
+        });
+
+    }
+
+    catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+// ======================================
+// USER - MY MICRO OFFER HISTORY
+// ======================================
+
+exports.getMyMicroOfferHistory = async (req, res) => {
+
+    try {
+
+        const history = await MicroOfferHistory.find({
+
+            userId: req.user.id
+
+        })
+
+            .populate(
+
+                "microOfferId",
+
+                "screenTitle"
+
+            )
+
+            .sort({
+
+                createdAt: -1
+
+            });
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: history.length,
+
+            data: history
+
+        });
+
+    }
+
+    catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};

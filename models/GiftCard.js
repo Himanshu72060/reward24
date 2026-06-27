@@ -1,35 +1,62 @@
-const mongoose =
-    require("mongoose");
+const mongoose = require("mongoose");
 
-const giftCardSchema =
-    new mongoose.Schema({
+const giftCardSchema = new mongoose.Schema({
 
-        title: {
-            type: String,
-            required: true
-        },
+    title: {
+        type: String,
+        required: true,
+        trim: true
+    },
 
-        amount: {
-            type: String,
-            required: true
-        },
+    amount: {
+        type: String,
+        required: true,
+        trim: true
+    },
 
-        code: {
-            type: String,
-            required: true
-        },
+    requiredCoins: {
+        type: Number,
+        required: true
+    },
 
-        color: {
-            type: String,
-            default: "0xFF232F3E"
-        }
+    code: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
 
-    }, {
-        timestamps: true
-    });
+    color: {
+        type: String,
+        default: "0xFF232F3E"
+    },
 
-module.exports =
-    mongoose.model(
-        "GiftCard",
-        giftCardSchema
-    );
+    isRedeemed: {
+        type: Boolean,
+        default: false
+    },
+
+    redeemedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+    },
+
+    redeemedAt: {
+        type: Date,
+        default: null
+    },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    }
+
+}, {
+    timestamps: true
+});
+
+module.exports = mongoose.model(
+    "GiftCard",
+    giftCardSchema
+);

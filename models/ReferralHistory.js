@@ -1,34 +1,46 @@
 const mongoose = require("mongoose");
 
-const referralHistorySchema =
-    new mongoose.Schema({
+const referralHistorySchema = new mongoose.Schema({
 
-        referrerUser: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-
-        newUser: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-
-        referralCode: {
-            type: String
-        },
-
-        rewardCoins: {
-            type: Number,
-            default: 100
-        }
-
+    userWhoEarned: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
-        {
-            timestamps: true
-        });
 
-module.exports =
-    mongoose.model(
-        "ReferralHistory",
-        referralHistorySchema
-    );
+    fromUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+
+    withdrawId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "WithdrawRequest",
+        required: true
+    },
+
+    level: {
+        type: Number,
+        enum: [1, 2],
+        required: true
+    },
+
+    withdrawAmount: {
+        type: Number,
+        required: true
+    },
+
+    rewardCoins: {
+        type: Number,
+        required: true
+    }
+
+}, {
+    timestamps: true
+});
+
+module.exports = mongoose.model(
+    "ReferralHistory",
+    referralHistorySchema
+);

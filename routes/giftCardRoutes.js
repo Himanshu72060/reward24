@@ -1,11 +1,10 @@
-const express =
-    require("express");
+const express = require("express");
 
-const router =
-    express.Router();
+const router = express.Router();
 
-const auth =
-    require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
+
+const role = require("../middleware/roleMiddleware");
 
 const {
 
@@ -17,56 +16,61 @@ const {
 
     updateGiftCard,
 
-    deleteGiftCard
+    deleteGiftCard,
 
-} = require(
-    "../controllers/giftCardController"
-);
+    redeemGiftCard
+
+} = require("../controllers/giftCardController");
 
 
-// CREATE
+// ================= ADMIN =================
 
+// Create Gift Card
 router.post(
     "/",
     auth,
+    role("admin"),
     createGiftCard
 );
 
+// Update Gift Card
+router.put(
+    "/:id",
+    auth,
+    role("admin"),
+    updateGiftCard
+);
 
-// GET ALL
+// Delete Gift Card
+router.delete(
+    "/:id",
+    auth,
+    role("admin"),
+    deleteGiftCard
+);
 
+
+// ================= USER =================
+
+// Get All Gift Cards
 router.get(
     "/",
     auth,
     getGiftCards
 );
 
-
-// GET SINGLE
-
+// Get Single Gift Card
 router.get(
     "/:id",
     auth,
     getGiftCard
 );
 
-
-// UPDATE
-
-router.put(
-    "/:id",
+// Redeem Gift Card
+router.post(
+    "/redeem/:id",
     auth,
-    updateGiftCard
+    redeemGiftCard
 );
 
-
-// DELETE
-
-router.delete(
-    "/:id",
-    auth,
-    deleteGiftCard
-);
-
-module.exports =
-    router;
+module.exports = router;

@@ -1,11 +1,66 @@
+// const mongoose = require("mongoose");
+
+// // 🔹 Payment Method Schema
+// const paymentMethodSchema = new mongoose.Schema({
+//     name: {
+//         type: String,
+//         required: true,
+//         default: "Enter coins"
+//     },
+
+//     hintText: {
+//         type: String,
+//         required: true,
+//         default: "UPI ID / Account Number"
+//     },
+
+//     selectMethod: {
+//         type: String,
+//         required: true,
+//         enum: ["UPI", "BANK", "CARD", "WALLET"],
+//         default: "UPI"
+//     }
+// });
+
+// // 🔹 Wallet Config Schema
+// const walletConfigSchema = new mongoose.Schema({
+//     minWithdrawCoins: {
+//         type: Number,
+//         default: 1000
+//     },
+//     rateCoins: {
+//         type: Number,
+//         default: 1000
+//     },
+//     rateRupees: {
+//         type: Number,
+//         default: 200
+//     },
+
+//     rules: [
+//         {
+//             type: String
+//         }
+//     ],
+
+//     paymentMethods: {
+//         type: [paymentMethodSchema],
+//         default: []
+//     }
+
+// }, { timestamps: true });
+
+// module.exports = mongoose.model("WalletConfig", walletConfigSchema);
+
 const mongoose = require("mongoose");
 
-// 🔹 Payment Method Schema
+// Payment Method Schema
 const paymentMethodSchema = new mongoose.Schema({
+
     name: {
         type: String,
         required: true,
-        default: "Enter coins"
+        default: "Enter Coins"
     },
 
     hintText: {
@@ -16,38 +71,64 @@ const paymentMethodSchema = new mongoose.Schema({
 
     selectMethod: {
         type: String,
-        required: true,
         enum: ["UPI", "BANK", "CARD", "WALLET"],
         default: "UPI"
     }
-});
 
-// 🔹 Wallet Config Schema
+}, { _id: false });
+
+
+// Wallet Config Schema
 const walletConfigSchema = new mongoose.Schema({
+
+    // Minimum coins required to withdraw
     minWithdrawCoins: {
         type: Number,
-        default: 1000
+        default: 100
     },
+
+    // Conversion Rate
     rateCoins: {
         type: Number,
         default: 1000
     },
+
     rateRupees: {
         type: Number,
         default: 200
     },
 
-    rules: [
-        {
-            type: String
-        }
-    ],
+    // Withdraw charges
+    withdrawCharge: {
+        type: Number,
+        default: 0
+    },
 
+    // Maximum withdraw per day
+    maxWithdrawPerDay: {
+        type: Number,
+        default: 5
+    },
+
+    // Enable / Disable withdraw
+    withdrawEnabled: {
+        type: Boolean,
+        default: true
+    },
+
+    // Rules shown in app
+    rules: [{
+        type: String
+    }],
+
+    // Payment Methods
     paymentMethods: {
         type: [paymentMethodSchema],
         default: []
     }
 
-}, { timestamps: true });
+}, {
+    timestamps: true
+});
 
 module.exports = mongoose.model("WalletConfig", walletConfigSchema);

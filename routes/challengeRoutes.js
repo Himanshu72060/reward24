@@ -1,59 +1,90 @@
-const express =
-    require("express");
+const express = require("express");
 
-const router =
-    express.Router();
+const router = express.Router();
+
+const auth = require("../middleware/authMiddleware");
+const admin = require("../middleware/adminMiddleware");
 
 const {
 
+    // ADMIN
     createChallenge,
-
     getChallenges,
-
     getSingleChallenge,
-
     updateChallenge,
+    deleteChallenge,
 
-    deleteChallenge
+    // USER
+    getUserChallenges,
+    completeChallenge,
+    getMyChallengeHistory
 
-} = require(
-    "../controllers/challengeController"
-);
+} = require("../controllers/challengeController");
 
-// CREATE
 
+// =======================================
+// ADMIN ROUTES
+// =======================================
+
+// Create Challenge
 router.post(
-    "/",
+    "/admin",
+    admin,
     createChallenge
 );
 
-// GET ALL
-
+// Get All Challenges
 router.get(
-    "/",
+    "/admin",
+    admin,
     getChallenges
 );
 
-// GET SINGLE
-
+// Get Single Challenge
 router.get(
-    "/:id",
+    "/admin/:id",
+    admin,
     getSingleChallenge
 );
 
-// UPDATE
-
+// Update Challenge
 router.put(
-    "/:id",
+    "/admin/:id",
+    admin,
     updateChallenge
 );
 
-// DELETE
-
+// Delete Challenge
 router.delete(
-    "/:id",
+    "/admin/:id",
+    admin,
     deleteChallenge
 );
 
-module.exports =
-    router;
+
+// =======================================
+// USER ROUTES
+// =======================================
+
+// Get Active Challenges
+router.get(
+    "/",
+    auth,
+    getUserChallenges
+);
+
+// Complete Challenge
+router.post(
+    "/complete/:id",
+    auth,
+    completeChallenge
+);
+
+// My Challenge History
+router.get(
+    "/history",
+    auth,
+    getMyChallengeHistory
+);
+
+module.exports = router;
