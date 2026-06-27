@@ -37,7 +37,6 @@ router.post(
 
 router.get(
     "/",
-    auth,
     getAdConfig
 );
 
