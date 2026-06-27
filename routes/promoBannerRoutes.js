@@ -59,7 +59,7 @@ router.get(
 
     "/",
 
-    auth,
+   
 
     getBanners
 
@@ -72,7 +72,6 @@ router.get(
 
     "/:id",
 
-    auth,
 
     getBanner
 
