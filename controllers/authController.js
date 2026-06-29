@@ -131,11 +131,9 @@ exports.signup = async (
 
 
         // DEFAULT BONUS
-        let signupCoins = 50;
+        let signupCoins = 0;
 
-        // ==============================
-        // CHECK REFERRAL CODE
-        // ==============================
+       
 
         let referredBy = null;
 
@@ -827,6 +825,50 @@ exports.getMyReferral = async (req, res) => {
                 referralIncome: user.referralIncome
 
             }
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+// ==============================
+// MY REFERRED USERS
+// ==============================
+
+exports.getMyReferredUsers = async (req, res) => {
+
+    try {
+
+        const users = await User.find({
+
+            referredBy: req.user.id
+
+        })
+        .select(
+            "fullName email mobileNumber profileImage coins createdAt"
+        )
+        .sort({
+            createdAt: -1
+        });
+
+        return res.status(200).json({
+
+            success: true,
+
+            totalReferrals: users.length,
+
+            data: users
 
         });
 

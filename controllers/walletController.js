@@ -289,7 +289,7 @@ exports.getWallet = async (req, res) => {
                     walletConfig?.rateCoins || 1000,
 
                 rateRupees:
-                    walletConfig?.rateRupees || 200,
+                    walletConfig?.rateRupees || 100,
 
                 withdrawEnabled:
                     walletConfig?.withdrawEnabled ?? true,

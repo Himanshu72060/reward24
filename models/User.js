@@ -71,12 +71,12 @@ const userSchema = new mongoose.Schema({
 
     coins: {
         type: Number,
-        default: 50
+        default: 0
     },
 
     totalEarnedCoins: {
         type: Number,
-        default: 50
+        default: 0
     },
 
     totalWithdrawnCoins: {
